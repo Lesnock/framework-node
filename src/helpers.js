@@ -1,3 +1,3 @@
-export function route(controller, method) {
+export function action(controller, method) {
   return controller[method].bind(controller)
 }
