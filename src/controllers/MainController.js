@@ -2,7 +2,12 @@ import Controller from '../core/Controller'
 
 class MainController extends Controller {
   async index(req, res) {
-    res.send('Inside main controller')
+
+    const user = await this.database('users').where('id', 1).first()
+
+    console.log(user)
+
+    res.send(`<h1>Hello, ${user.name}!</h1>`)
   }
 }
 
