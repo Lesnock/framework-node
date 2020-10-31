@@ -1,0 +1,7 @@
+{
+  "name": "framework-node",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Caio Lesnock <caio.dev@outlook.com>",
+  "license": "MIT"
+}
