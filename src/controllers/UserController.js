@@ -3,11 +3,12 @@ import Controller from '../core/Controller'
 
 class UserController extends Controller {
   async index(req, res) {
-
-    const user = await this.database('users')
+    const users = await this.database('users')
       .select(['id', 'name', 'username'])
 
-    res.json(user)
+    // const users = database.getAllWithFilters('users', req.filters)
+
+    res.json(users)
   }
 
   async store(req, res) {
@@ -16,7 +17,7 @@ class UserController extends Controller {
     const hash = await bcrypt.hash(password, 8)
 
     try {
-      const user = await this.database('users').insert({
+      await this.database('users').insert({
         name,
         username,
         password: hash,
@@ -26,6 +27,21 @@ class UserController extends Controller {
     } catch (error) {
       return res.status(500).json({ error: 'Internal server error' })
     }
+  }
+
+  async show(req, res) {
+    const { id } = req.params
+
+    const user = await this.database('users')
+      .select(['id', 'name', 'username'])
+      .where('id', id)
+      .first()
+
+    if (!user) {
+      return res.status(404).json({ error: 'Not found' })
+    }
+
+    return res.json(user)
   }
 }
 

@@ -18,5 +18,5 @@ Public.post('/login', action(LoginController, 'login'))
 // Private routes
 export const Private = new Router()
 Private.use(auth)
-
 Private.get('/users', action(UserController, 'index'))
+Private.get('/users/:id', action(UserController, 'show'))

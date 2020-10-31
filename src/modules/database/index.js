@@ -9,6 +9,10 @@ class Database {
 
     return knex(knexFile.development)
   }
+
+  getAllWithFilters(table, filters) {
+
+  }
 }
 
 export default Database
