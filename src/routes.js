@@ -13,7 +13,7 @@ import LoginController from './controllers/LoginController'
 // Public routes
 export const Public = new Router()
 Public.get('/', action(MainController, 'index'))
-Public.post('/', action(UserController, 'store'))
+Public.post('/users', action(UserController, 'store'))
 Public.post('/login', action(LoginController, 'login'))
 
 // Private routes
@@ -23,3 +23,4 @@ Private.use(filters)
 
 Private.get('/users', action(UserController, 'index'))
 Private.get('/users/:id', action(UserController, 'show'))
+Private.put('/users/:id', action(UserController, 'update'))

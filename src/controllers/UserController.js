@@ -12,8 +12,6 @@ class UserController extends Controller {
     response.total = await User.getTotal()
     response.count = response.rows.length
 
-    // const response = await User.getAllWithCountAndTotal({ filters })
-
     res.json(response)
   }
 
@@ -23,13 +21,16 @@ class UserController extends Controller {
     const hash = await bcrypt.hash(password, 8)
 
     try {
-      await User.insert({
+      const userId = await User.insert({
         name,
         username,
         password: hash,
+        outra: 123
       })
 
-      return res.send()
+      const user = await User.find(userId)
+
+      return res.send(user)
     } catch (error) {
       return res.status(500).json({ error: 'Internal server error' })
     }
@@ -45,6 +46,35 @@ class UserController extends Controller {
     }
 
     return res.json(user)
+  }
+
+  async update(req, res) {
+    const { id } = req.params
+
+    const userExists = await User.find(id)
+
+    if (!userExists) {
+      return res.status(404).json({ error: 'Not found' })
+    }
+
+    const { name, username, password } = req.body
+
+    const hash = await bcrypt.hash(password, 8)
+
+    try {
+      await User.update(id, {
+        name,
+        username,
+        password: hash
+      })
+
+      const user = await User.find(id)
+
+      return res.json(user)
+
+    } catch (error) {
+      return res.status(500).json({ error: 'Internal server error' })
+    }
   }
 }
 
