@@ -1,4 +1,3 @@
-import { query } from 'express'
 import database from '../modules/database'
 import { setFilters } from '../modules/filters'
 
@@ -8,20 +7,16 @@ class Model {
   static orderable = []
   static defaultLimit = 20
 
-  static getAllWithFilters(filters) {
-    let query = database(this.table)
-
-    if (this.defaultAttributes) {
-      query.select(this.defaultAttributes)
-    }
-
-    query = setFilters(query, filters, this)
-
-    return query
+  static query() {
+    return database(this.table)
   }
 
+  /**
+   * Get all results from a table
+   * @param {Object} options
+   */
   static async getAll({ filters } = {}) {
-    let query = database(this.table)
+    let query = this.query()
 
     if (this.defaultAttributes) {
       query.select(this.defaultAttributes)
@@ -35,7 +30,7 @@ class Model {
   }
 
   static async getTotal({ filters } = {}) {
-    let query = database(this.table)
+    let query = this.query()
 
     if (filters) {
       // Not add a limit and offset
@@ -52,6 +47,22 @@ class Model {
     const result = await query
 
     return result.total
+  }
+
+  static async find(id) {
+    const query = this
+      .query()
+      .where('id', id)
+
+    if (this.defaultAttributes) {
+      query.select(this.defaultAttributes)
+    }
+
+    return query.first()
+  }
+
+  static async insert(data) {
+    return this.query().insert(data)
   }
 }
 

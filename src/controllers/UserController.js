@@ -23,7 +23,7 @@ class UserController extends Controller {
     const hash = await bcrypt.hash(password, 8)
 
     try {
-      await this.database('users').insert({
+      await User.insert({
         name,
         username,
         password: hash,
@@ -38,10 +38,7 @@ class UserController extends Controller {
   async show(req, res) {
     const { id } = req.params
 
-    const user = await this.database('users')
-      .select(['id', 'name', 'username'])
-      .where('id', id)
-      .first()
+    const user = await User.find(id)
 
     if (!user) {
       return res.status(404).json({ error: 'Not found' })
