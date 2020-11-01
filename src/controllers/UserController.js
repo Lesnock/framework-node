@@ -76,6 +76,24 @@ class UserController extends Controller {
       return res.status(500).json({ error: 'Internal server error' })
     }
   }
+
+  async delete(req, res) {
+    const { id } = req.params
+
+    const user = await User.find(id)
+
+    if (!user) {
+      return res.status(404).json({ error: 'Not found' })
+    }
+
+    try {
+      await User.delete(id)
+
+      return res.send()
+    } catch (error) {
+      return res.status(500).json({ error: 'Internal server error' })
+    }
+  }
 }
 
 export default new UserController()

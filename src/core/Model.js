@@ -149,6 +149,16 @@ class Model {
       .where('id', id)
       .update(data)
   }
+
+  /**
+   * Delete record
+   */
+  static async delete(id) {
+    return this
+      .query()
+      .where('id', id)
+      .del()
+  }
 }
 
 export default Model
