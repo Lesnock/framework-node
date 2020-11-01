@@ -4,10 +4,17 @@ import Controller from '../core/Controller'
 
 class UserController extends Controller {
   async index(req, res) {
+    const { filters } = req
 
-    const users = User.getAllWithFilters(req.filters)
+    const response = {}
 
-    res.json(users)
+    response.rows = await User.getAll({ filters })
+    response.total = await User.getTotal()
+    response.count = response.rows.length
+
+    // const response = await User.getAllWithCountAndTotal({ filters })
+
+    res.json(response)
   }
 
   async store(req, res) {
