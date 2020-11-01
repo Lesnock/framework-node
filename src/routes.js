@@ -3,6 +3,7 @@ import { action } from './helpers'
 
 // Middlewares
 import auth from './middlewares/auth'
+import filters from './middlewares/filters'
 
 // Controllers
 import MainController from './controllers/MainController'
@@ -18,5 +19,7 @@ Public.post('/login', action(LoginController, 'login'))
 // Private routes
 export const Private = new Router()
 Private.use(auth)
+Private.use(filters)
+
 Private.get('/users', action(UserController, 'index'))
 Private.get('/users/:id', action(UserController, 'show'))

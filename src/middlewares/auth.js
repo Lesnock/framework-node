@@ -1,7 +1,7 @@
 import { next } from 'sucrase/dist/parser/tokenizer'
 import Auth from '../modules/auth'
 
-export default function (req, res, next) {
+export default function auth(req, res, next) {
   const { authorization } = req.headers
 
   if (!authorization) {

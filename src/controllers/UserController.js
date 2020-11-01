@@ -1,12 +1,11 @@
 import bcrypt from 'bcrypt'
+import User from '../models/User'
 import Controller from '../core/Controller'
 
 class UserController extends Controller {
   async index(req, res) {
-    const users = await this.database('users')
-      .select(['id', 'name', 'username'])
 
-    // const users = database.getAllWithFilters('users', req.filters)
+    const users = User.getAllWithFilters(req.filters)
 
     res.json(users)
   }
