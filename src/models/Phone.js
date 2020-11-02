@@ -1,7 +1,7 @@
 import Model from '../core/Model'
 
-class Department extends Model {
-  static table = 'departments'
+class Phone extends Model {
+  static table = 'phones'
 
   static columns = {
     id: {
@@ -17,4 +17,4 @@ class Department extends Model {
   }
 }
 
-export default Department
+export default Phone

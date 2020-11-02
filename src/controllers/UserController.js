@@ -10,11 +10,11 @@ class UserController extends Controller {
 
     const response = {}
 
-    let users = await User.getAll({ filters, include: ['department'] })
-      .orderBy('departments.name', 'desc')
+    let users = await User.findAll({ filters, include: ['department', 'phones'] })
+      .orderBy('departments.name', 'asc')
 
     response.rows = users
-    response.total = await User.getTotal()
+    response.total = await User.getTotal({ filters })
     response.count = response.rows.length
 
     res.json(response)

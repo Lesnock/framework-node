@@ -8,7 +8,7 @@ class User extends Model {
   static columns = {
     id: {
       type: 'integer',
-      as: 'ID',
+      // as: 'ID',
     },
     name: {
       type: 'string',

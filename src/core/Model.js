@@ -82,7 +82,7 @@ class Model {
    * Get all results from a table
    * @param {Object} options
    */
-  static getAll(options = {}) {
+  static findAll(options = {}) {
     let query = this.query()
 
     query.model = this
@@ -94,10 +94,30 @@ class Model {
     }
 
     if (options.include) {
-      query.include = ['department']
+      this.addIncludeToQuery(query, options.include)
     }
 
     return query
+  }
+
+  static addIncludeToQuery(query, include) {
+    query.include = {
+      belongsTo: [],
+      hasOne: [],
+      hasMany: [],
+    }
+
+    include.forEach(associationName => {
+      const association = this.associations[associationName]
+
+      if (!association) {
+        if (!this.associations[associationName]) {
+          throw new Error(`Association ${associationName} does not exists in model ${this.name}`)
+        }
+      }
+
+      query.include[association.type].push(associationName)
+    })
   }
 
   /**
