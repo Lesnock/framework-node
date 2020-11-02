@@ -70,40 +70,38 @@ function addIncludeHook(database) {
   })
 
   // hasMany hook (Eager loading)
-  database.addHook('after', 'select', '*', (when, method, table, params) => {
+  database.addHook('after', 'select', '*', async (when, method, table, params) => {
     const model = params.query.model
     const include = params.query.include
-
-    // console.log(when, method, table)
 
     if (!model || !include) {
       return
     }
 
-    for (const associationName of include.hasMany) {
-      eagerLoadInclude(associationName)
-    }
+    async function eagerLoad() {
+      for (const associationName of include.hasMany) {
+        const association = model.associations[associationName]
 
-    async function eagerLoadInclude(associationName) {
-      const association = model.associations[associationName]
+        const results = [...params.result]
 
-      const results = [...params.result]
+        const target = model.columns[association.target].as || association.target
+        const column = association.column
 
-      const target = model.columns[association.target].as || association.target
-      const column = association.column
+        const fetchedIds = results.map(row => {
+          return row[target]
+        })
 
-      const fetchedIds = results.map(row => {
-        return row[target]
-      })
+        const foreign = await association.model
+          .findAll()
+          .whereIn(`${association.model.table}.${column}`, fetchedIds)
 
-      const foreign = await association.model
-        .findAll()
-        .whereIn(`${association.model.table}.${column}`, fetchedIds)
-
-      for (const index in params.result) {
-        params.result[index][associationName] = foreign.filter(row => row[column] === params.result[index][target])
+        for (const index in params.result) {
+          params.result[index][associationName] = foreign.filter(row => row[column] === params.result[index][target])
+        }
       }
     }
+
+    await eagerLoad()
   })
 }
 

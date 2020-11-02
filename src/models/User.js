@@ -2,8 +2,6 @@ import Phone from './Phone'
 import Model from '../core/Model'
 import Department from './Department'
 
-// console.log('outside', Department)
-
 class User extends Model {
   static table = 'users'
 

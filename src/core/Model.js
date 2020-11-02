@@ -31,6 +31,9 @@ class Model {
    */
   static defaultLimit = 20
 
+  /**
+   * Define all associations
+   */
   static associations = {}
 
   /**

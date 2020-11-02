@@ -7,7 +7,12 @@ class DepartmentController extends Controller {
 
     const response = {}
 
-    response.rows = await Department.findAll({ filters, include: ['users'] })
+    response.rows = await Department.findAll({
+      filters,
+      include: [
+
+      ]
+    })
 
     res.json(response)
   }
