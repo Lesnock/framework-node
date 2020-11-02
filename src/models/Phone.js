@@ -1,4 +1,5 @@
 import Model from '../core/Model'
+import User from './User'
 
 class Phone extends Model {
   static table = 'phones'
@@ -13,6 +14,15 @@ class Phone extends Model {
     },
     user_id: {
       type: 'integer'
+    }
+  }
+
+  static associations = {
+    users: {
+      type: 'hasMany',
+      model: User,
+      column: 'department_id',
+      target: 'id'
     }
   }
 }

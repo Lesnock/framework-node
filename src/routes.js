@@ -9,6 +9,8 @@ import filters from './middlewares/filters'
 import MainController from './controllers/MainController'
 import UserController from './controllers/UserController'
 import LoginController from './controllers/LoginController'
+import PhoneController from './controllers/PhoneController'
+import DepartmentController from './controllers/DepartmentController'
 
 // Public routes
 export const Public = new Router()
@@ -25,3 +27,7 @@ Private.get('/users', action(UserController, 'index'))
 Private.get('/users/:id', action(UserController, 'show'))
 Private.put('/users/:id', action(UserController, 'update'))
 Private.delete('/users/:id', action(UserController, 'delete'))
+
+Private.get('/departments', action(DepartmentController, 'index'))
+
+Private.get('/phones', action(PhoneController, 'index'))

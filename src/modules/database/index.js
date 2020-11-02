@@ -74,11 +74,11 @@ function addIncludeHook(database) {
     const model = params.query.model
     const include = params.query.include
 
+    // console.log(when, method, table)
+
     if (!model || !include) {
       return
     }
-
-    include.hasMany.forEach(eagerLoadInclude)
 
     for (const associationName of include.hasMany) {
       eagerLoadInclude(associationName)

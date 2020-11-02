@@ -31,6 +31,8 @@ class Model {
    */
   static defaultLimit = 20
 
+  static associations = {}
+
   /**
    * Get knex instance with table
    */
@@ -51,29 +53,7 @@ class Model {
       const as = column.as || columnName
 
       attributes.push(`${this.table}.${columnName} as ${as}`)
-
-      // Column is foreign
-      // if (column.foreign && column.autoInclude) {
-      //   const type = column.foreign[0].toLowerCase()
-
-      //   // Get attributes from the foregin model
-      //   if (type === 'belongsto' || type === 'hasone') {
-      //     const foreignModel = column.foreign[1]
-      //     let foreignColumns = Object.keys(foreignModel.columns)
-
-      //     // Add table name for all foreign attributes
-      //     const foreignAttrs = foreignColumns
-      //       .filter(foreignColumnName => foreignModel.columns[foreignColumnName].hidden !== true)
-      //       .map(foreignColumnName => (
-      //         `${foreignModel.table}.${foreignColumnName} as ${foreignModel.table}.${foreignColumnName}`
-      //       ))
-
-      //     attributes = [...attributes, ...foreignAttrs]
-      //   }
-      // }
     }
-
-    // console.log('attributes', attributes)
 
     return attributes
   }

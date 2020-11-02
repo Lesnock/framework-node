@@ -7,7 +7,7 @@ export default {
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
     },
-    debug: true,
+    debug: false,
   },
   production: {},
 }
