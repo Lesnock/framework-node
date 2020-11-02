@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt'
 import User from '../models/User'
 import Controller from '../core/Controller'
+import Department from '../models/Department'
+import database from '../modules/database'
 
 class UserController extends Controller {
   async index(req, res) {
@@ -8,7 +10,10 @@ class UserController extends Controller {
 
     const response = {}
 
-    response.rows = await User.getAll({ filters })
+    let users = await User.getAll({ filters, include: ['department'] })
+      .orderBy('departments.name', 'desc')
+
+    response.rows = users
     response.total = await User.getTotal()
     response.count = response.rows.length
 

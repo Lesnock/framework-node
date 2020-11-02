@@ -38,19 +38,63 @@ class Model {
     return database(this.table)
   }
 
+  static mountAttributes() {
+    let attributes = []
+
+    for (const columnName in this.columns) {
+      const column = this.columns[columnName]
+
+      if (column.hidden === true) {
+        continue
+      }
+
+      const as = column.as || columnName
+
+      attributes.push(`${this.table}.${columnName} as ${as}`)
+
+      // Column is foreign
+      // if (column.foreign && column.autoInclude) {
+      //   const type = column.foreign[0].toLowerCase()
+
+      //   // Get attributes from the foregin model
+      //   if (type === 'belongsto' || type === 'hasone') {
+      //     const foreignModel = column.foreign[1]
+      //     let foreignColumns = Object.keys(foreignModel.columns)
+
+      //     // Add table name for all foreign attributes
+      //     const foreignAttrs = foreignColumns
+      //       .filter(foreignColumnName => foreignModel.columns[foreignColumnName].hidden !== true)
+      //       .map(foreignColumnName => (
+      //         `${foreignModel.table}.${foreignColumnName} as ${foreignModel.table}.${foreignColumnName}`
+      //       ))
+
+      //     attributes = [...attributes, ...foreignAttrs]
+      //   }
+      // }
+    }
+
+    // console.log('attributes', attributes)
+
+    return attributes
+  }
+
   /**
    * Get all results from a table
    * @param {Object} options
    */
-  static async getAll({ filters } = {}) {
+  static getAll(options = {}) {
     let query = this.query()
 
-    if (this.defaultAttributes) {
-      query.select(this.defaultAttributes)
+    query.model = this
+
+    query.select(this.mountAttributes(options))
+
+    if (options.filters) {
+      query = setFilters(query, options.filters, this)
     }
 
-    if (filters) {
-      query = setFilters(query, filters, this)
+    if (options.include) {
+      query.include = ['department']
     }
 
     return query
@@ -71,7 +115,7 @@ class Model {
       query = setFilters(query, filters, this)
     }
 
-    query.count('id', { as: 'total' })
+    query.count(`${this.table}.id`, { as: 'total' })
 
     query.first()
 
@@ -90,7 +134,7 @@ class Model {
       .where('id', id)
 
     if (this.defaultAttributes) {
-      query.select(this.defaultAttributes)
+      query.select(this.defaultAttributes.map(attr => `${this.table}.${attr}`))
     }
 
     return query.first()

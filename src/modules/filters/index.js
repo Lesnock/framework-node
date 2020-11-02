@@ -2,7 +2,7 @@ export function setFilters(query, filters, model) {
   // ======== Sort and order =========
   if (filters.sort) {
     if (model.orderable.includes(filters.sort)) {
-      query = query.orderBy(filters.sort, filters.order)
+      query = query.orderBy(`${model.table}.${filters.sort}`, filters.order)
     }
   }
 
@@ -15,12 +15,11 @@ export function setFilters(query, filters, model) {
 
         // Column is number, boolean or date
         if (['integer', 'float', 'boolean', 'date'].includes(columnType)) {
-          this.orWhere(column, filters.search)
+          this.orWhere(`${model.table}.${column}`, filters.search)
         }
         // Column is string
         else {
-          console.log(column, 'like', `%${filters.search}%`)
-          this.orWhere(column, 'like', `%${filters.search}%`)
+          this.orWhere(`${model.table}.${column}`, 'like', `%${filters.search}%`)
         }
       })
     })
