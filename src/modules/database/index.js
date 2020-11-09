@@ -114,9 +114,13 @@ function addIncludeHook(database) {
  */
 function addDotNotationHook(database) {
   database.addHook('after', 'select', '*', (when, method, table, params) => {
-    for (const index in params.result) {
-      const row = params.result[index]
-      params.result[index] = resolveDotNotation(row)
+    if (Array.isArray(params.result)) {
+      for (const index in params.result) {
+        const row = params.result[index]
+        params.result[index] = resolveDotNotation(row)
+      }
+    } else {
+      params.result = resolveDotNotation(params.result)
     }
   })
 }

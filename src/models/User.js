@@ -1,6 +1,7 @@
-import Phone from './Phone'
+// import Phone from './Phone'
 import Model from '../core/Model'
-import Department from './Department'
+import { models } from '../config/database'
+// import Department from './Department'
 
 class User extends Model {
   static table = 'users'
@@ -28,14 +29,15 @@ class User extends Model {
   static associations = {
     department: {
       type: 'belongsTo',
-      model: Department,
+      // model: Department,
+      model: models.Department,
       column: 'department_id',
       target: 'id'
     },
 
     phones: {
       type: 'hasMany',
-      model: Phone,
+      // model: Phone,
       column: 'user_id',
       target: 'id'
     }

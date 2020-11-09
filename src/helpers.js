@@ -1,3 +1,8 @@
+/**
+ * Get controller action with bind to controller
+ * @param {*} controller
+ * @param {*} method
+ */
 export function action(controller, method) {
   return controller[method].bind(controller)
 }

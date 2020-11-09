@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt'
 import Auth from '../modules/auth'
+import database from '../modules/database'
 import Controller from '../core/Controller'
 
 class LoginController extends Controller {
@@ -7,9 +8,11 @@ class LoginController extends Controller {
 
     const { username, password } = req.body
 
-    const user = await this.database('users')
+    const user = await database('users')
       .where('username', username)
       .first()
+
+    // console.log(user)
 
     if (!user) {
       return res.status(401).json({ error: 'Incorrect authentication data' })
