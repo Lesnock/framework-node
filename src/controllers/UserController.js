@@ -27,7 +27,9 @@ class UserController extends Controller {
         }
       ]
     })
-    // .orderBy('departments.name', 'asc')
+    // .orderBy('phones.id', 'asc')
+
+    // let users = await User.findAll({ filters, include: [User, Department] })
 
     response.rows = users
     response.total = await User.getTotal({ filters })
