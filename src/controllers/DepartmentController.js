@@ -10,7 +10,7 @@ class DepartmentController extends Controller {
     response.rows = await Department.findAll({
       filters,
       include: [
-
+        'users'
       ]
     })
 

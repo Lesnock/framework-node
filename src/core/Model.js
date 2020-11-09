@@ -84,22 +84,18 @@ class Model {
   }
 
   static addIncludeToQuery(query, include) {
-    query.include = {
+    query.includes = {
       belongsTo: [],
       hasOne: [],
       hasMany: [],
     }
 
-    include.forEach(associationName => {
-      const association = this.associations[associationName]
-
-      if (!association) {
-        if (!this.associations[associationName]) {
-          throw new Error(`Association ${associationName} does not exists in model ${this.name}`)
-        }
+    include.forEach(({ model, type, fk, target = 'id', as }) => {
+      if (!model || !type || !fk) {
+        throw new Error('All includes should have at least: model, type and fk')
       }
 
-      query.include[association.type].push(associationName)
+      query.includes[type].push({ model, fk, target, as })
     })
   }
 
@@ -205,6 +201,10 @@ class Model {
       .query()
       .where('id', id)
       .del()
+  }
+
+  static belongsTo(model) {
+    console.log('rodou', model)
   }
 }
 

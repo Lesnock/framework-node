@@ -38,33 +38,31 @@ function addIncludeHook(database) {
   // belongsTo and hasOne Hook
   database.addHook('before', 'select', '*', (when, method, table, params) => {
     const model = params.query.model
-    const include = params.query.include
+    const includes = params.query.includes
 
-    if (!model || !include) {
+    if (!model || !includes) {
       return
     }
 
-    include.belongsTo.forEach(selectAndJoin)
-    include.hasOne.forEach(selectAndJoin)
+    includes.belongsTo.forEach(association => selectAndJoin(association, 'belongsTo'))
+    includes.hasOne.forEach(association => selectAndJoin(association, 'hasOne'))
 
-    function selectAndJoin(associationName) {
-      const association = model.associations[associationName]
-
+    function selectAndJoin(association, type) {
       const columns = association.model.columns
 
       for (const columnName in columns) {
         const column = columns[columnName]
 
         if (!column.hidden) {
-          const as = `${associationName}.${column.as || columnName}`
+          const as = `${association.as || association.table}.${column.as || columnName}`
           params.query.select(`${association.model.table}.${columnName} as ${as}`)
         }
       }
 
       params.query.leftJoin(
         association.model.table,
-        `${model.table}.${association.column}`,
-        `${association.model.table}.${association.target}`
+        `${model.table}.${type === 'belongsTo' ? association.fk : association.target}`,
+        `${association.model.table}.${type === 'belongsTo' ? association.target : association.fk}`
       )
     }
   })
@@ -72,20 +70,18 @@ function addIncludeHook(database) {
   // hasMany hook (Eager loading)
   database.addHook('after', 'select', '*', async (when, method, table, params) => {
     const model = params.query.model
-    const include = params.query.include
+    const includes = params.query.includes
 
-    if (!model || !include) {
+    if (!model || !includes) {
       return
     }
 
     async function eagerLoad() {
-      for (const associationName of include.hasMany) {
-        const association = model.associations[associationName]
-
+      for (const association of includes.hasMany) {
         const results = [...params.result]
 
         const target = model.columns[association.target].as || association.target
-        const column = association.column
+        const fk = association.fk
 
         const fetchedIds = results.map(row => {
           return row[target]
@@ -93,10 +89,10 @@ function addIncludeHook(database) {
 
         const foreign = await association.model
           .findAll()
-          .whereIn(`${association.model.table}.${column}`, fetchedIds)
+          .whereIn(`${association.model.table}.${target}`, fetchedIds)
 
         for (const index in params.result) {
-          params.result[index][associationName] = foreign.filter(row => row[column] === params.result[index][target])
+          params.result[index][association.as || association.model.table] = foreign.filter(row => row[fk] === params.result[index][target])
         }
       }
     }

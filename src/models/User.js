@@ -1,7 +1,6 @@
 // import Phone from './Phone'
 import Model from '../core/Model'
-import { models } from '../config/database'
-// import Department from './Department'
+import Department from './Department'
 
 class User extends Model {
   static table = 'users'
@@ -24,23 +23,6 @@ class User extends Model {
     department_id: {
       type: 'integer',
     },
-  }
-
-  static associations = {
-    department: {
-      type: 'belongsTo',
-      // model: Department,
-      model: models.Department,
-      column: 'department_id',
-      target: 'id'
-    },
-
-    phones: {
-      type: 'hasMany',
-      // model: Phone,
-      column: 'user_id',
-      target: 'id'
-    }
   }
 
   static searchable = ['id', 'name', 'username'] // Passar

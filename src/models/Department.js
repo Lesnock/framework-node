@@ -1,3 +1,4 @@
+import User from './User'
 import Model from '../core/Model'
 
 class Department extends Model {
@@ -15,7 +16,7 @@ class Department extends Model {
   static associations = {
     users: {
       type: 'hasMany',
-      // model: User,
+      model: User,
       column: 'department_id',
       target: 'id'
     }

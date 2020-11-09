@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt'
 import User from '../models/User'
+import Phone from '../models/Phone'
 import Controller from '../core/Controller'
+import Department from '../models/Department'
 
 class UserController extends Controller {
   async index(req, res) {
@@ -8,7 +10,23 @@ class UserController extends Controller {
 
     const response = {}
 
-    let users = await User.findAll({ filters, include: ['department', 'phones'] })
+    let users = await User.findAll({
+      filters,
+      include: [
+        {
+          model: Department,
+          type: 'belongsTo',
+          fk: 'department_id',
+          as: 'department',
+        },
+        {
+          model: Phone,
+          type: 'hasMany',
+          fk: 'user_id',
+          as: 'phones',
+        }
+      ]
+    })
     // .orderBy('departments.name', 'asc')
 
     response.rows = users
