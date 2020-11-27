@@ -110,6 +110,7 @@ class Model {
         throw new Error('All includes should have at least: model, type and fk')
       }
 
+      // All this includes will be resolved in the Knex Hooks (modules/database)
       query.includes[type].push({ model, fk, target, as })
     })
   }
