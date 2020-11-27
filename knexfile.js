@@ -1,6 +1,6 @@
-export default {
+module.exports = {
   development: {
-    client: 'mysql2',
+    client: 'pg',
     connection: {
       host: process.env.DB_HOST,
       port: process.env.DB_PORT,
@@ -9,6 +9,9 @@ export default {
       database: process.env.DB_NAME,
     },
     debug: false,
+    migrations: {
+      directory: './migrations'
+    }
   },
   production: {},
 }
