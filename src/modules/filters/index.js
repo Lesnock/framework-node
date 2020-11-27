@@ -1,3 +1,16 @@
+/**
+ * Filters
+ *
+ * This module create filters using Knex and return the query
+ * with all fitlers constructed
+ *
+ * Available filters:
+ * sort & order
+ * search
+ * limit
+ * page
+ */
+
 export function setFilters(query, filters, model) {
   // ======== Sort and order =========
   if (filters.sort) {
