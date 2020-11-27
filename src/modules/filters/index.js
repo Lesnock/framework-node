@@ -10,7 +10,7 @@ export function setFilters(query, filters, model) {
   if (filters.search) {
     // Create grouped "or where"
     query = query.where(function () {
-      model.searchable.forEach(column => {
+      model.searchable.forEach((column) => {
         const columnType = model.columns[column].type
 
         // Column is number, boolean or date
@@ -19,7 +19,11 @@ export function setFilters(query, filters, model) {
         }
         // Column is string
         else {
-          this.orWhere(`${model.table}.${column}`, 'like', `%${filters.search}%`)
+          this.orWhere(
+            `${model.table}.${column}`,
+            'like',
+            `%${filters.search}%`
+          )
         }
       })
     })

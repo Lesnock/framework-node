@@ -5,22 +5,22 @@ class User extends Model {
 
   static columns = {
     id: {
-      type: 'integer',
+      type: 'integer'
       // as: 'ID',
     },
     name: {
-      type: 'string',
+      type: 'string'
     },
     username: {
-      type: 'string',
+      type: 'string'
     },
     password: {
       type: 'string',
-      hidden: true,
+      hidden: true
     },
     department_id: {
-      type: 'integer',
-    },
+      type: 'integer'
+    }
   }
 
   static searchable = ['id', 'name', 'username'] // Passar

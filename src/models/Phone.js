@@ -10,7 +10,7 @@ class Phone extends Model {
       as: 'ID'
     },
     number: {
-      type: 'integer',
+      type: 'integer'
     },
     user_id: {
       type: 'integer'

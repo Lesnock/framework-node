@@ -16,8 +16,8 @@ class Email {
       secure: false,
       auth: {
         user: this.isTest ? testAccount.user : process.env.EMAIL_USER,
-        pass: this.isTest ? testAccount.pass : process.env.EMAIL_PASS,
-      },
+        pass: this.isTest ? testAccount.pass : process.env.EMAIL_PASS
+      }
     }
 
     return nodemailer.createTransport(emailConfig)

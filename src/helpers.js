@@ -50,7 +50,6 @@ export function resolveDotNotation(dotNotationObj = {}) {
     resolved[first][rest] = value // { department: { 'one.name': 'TI' } }
 
     resolved[first] = resolveDotNotation(resolved[first])
-
   }
 
   return resolved

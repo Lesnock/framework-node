@@ -5,12 +5,9 @@ import Controller from '../core/Controller'
 
 class LoginController extends Controller {
   async login(req, res) {
-
     const { username, password } = req.body
 
-    const user = await database('users')
-      .where('username', username)
-      .first()
+    const user = await database('users').where('username', username).first()
 
     // console.log(user)
 
@@ -30,9 +27,9 @@ class LoginController extends Controller {
     res.json({
       user: {
         name: user.name,
-        username: user.username,
+        username: user.username
       },
-      token,
+      token
     })
   }
 }

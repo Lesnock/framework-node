@@ -6,10 +6,10 @@ class Department extends Model {
 
   static columns = {
     id: {
-      type: 'integer',
+      type: 'integer'
     },
     name: {
-      type: 'string',
+      type: 'string'
     }
   }
 

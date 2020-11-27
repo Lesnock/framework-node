@@ -15,8 +15,6 @@ class Views {
 
     const template = Handlebars.compile(content)
 
-
-
     return this.parseView(template({ ...data, ...viewFunctions }))
   }
 
@@ -34,12 +32,15 @@ class Views {
     const functionRegex = /\@\@([a-zA-Z0-9]+)\(([a-zA-Z0-9\'\"\,]{0,})\)/g
     const results = [...view.matchAll(functionRegex)]
 
-    results.forEach(result => {
+    results.forEach((result) => {
       const expression = result[0]
       const functionName = result[1]
       const args = result[2]
 
-      viewContent = viewContent.replace(expression, viewFunctions[functionName](eval(args)))
+      viewContent = viewContent.replace(
+        expression,
+        viewFunctions[functionName](eval(args))
+      )
     })
 
     return viewContent

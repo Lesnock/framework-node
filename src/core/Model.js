@@ -87,7 +87,7 @@ class Model {
     query.includes = {
       belongsTo: [],
       hasOne: [],
-      hasMany: [],
+      hasMany: []
     }
 
     include.forEach(({ model, type, fk, target = 'id', as }) => {
@@ -128,12 +128,12 @@ class Model {
    * @param {*} id
    */
   static async find(id) {
-    const query = this
-      .query()
-      .where('id', id)
+    const query = this.query().where('id', id)
 
     if (this.defaultAttributes) {
-      query.select(this.defaultAttributes.map(attr => `${this.table}.${attr}`))
+      query.select(
+        this.defaultAttributes.map((attr) => `${this.table}.${attr}`)
+      )
     }
 
     return query.first()
@@ -145,9 +145,7 @@ class Model {
    * @param {Any} value
    */
   static async findBy(column, value) {
-    const query = this
-      .query()
-      .where(column, value)
+    const query = this.query().where(column, value)
 
     if (this.defaultAttributes) {
       query.select(this.defaultAttributes)
@@ -164,7 +162,7 @@ class Model {
     const columns = Object.keys(data)
 
     // Remove all columns that does not exists in database
-    columns.forEach(column => {
+    columns.forEach((column) => {
       if (!this.columns[column]) {
         delete data[column]
       }
@@ -181,26 +179,20 @@ class Model {
     const columns = Object.keys(data)
 
     // Remove all columns that does not exists in database
-    columns.forEach(column => {
+    columns.forEach((column) => {
       if (!this.columns[column]) {
         delete data[column]
       }
     })
 
-    return this
-      .query()
-      .where('id', id)
-      .update(data)
+    return this.query().where('id', id).update(data)
   }
 
   /**
    * Delete record
    */
   static async delete(id) {
-    return this
-      .query()
-      .where('id', id)
-      .del()
+    return this.query().where('id', id).del()
   }
 
   static belongsTo(model) {

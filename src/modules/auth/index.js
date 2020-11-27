@@ -5,10 +5,9 @@ class Auth {
   tokenData = {}
 
   async login(userId) {
-    const token = jwt.sign(
-      { id: userId },
-      authConfig.secretKey, { expiresIn: authConfig.expiresIn }
-    )
+    const token = jwt.sign({ id: userId }, authConfig.secretKey, {
+      expiresIn: authConfig.expiresIn
+    })
 
     return token
   }
