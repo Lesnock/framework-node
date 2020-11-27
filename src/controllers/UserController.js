@@ -17,13 +17,13 @@ class UserController extends Controller {
           model: Department,
           type: 'belongsTo',
           fk: 'department_id',
-          as: 'department',
+          as: 'department'
         },
         {
           model: Phone,
           type: 'hasMany',
           fk: 'user_id',
-          as: 'phones',
+          as: 'phones'
         }
       ]
     })
@@ -94,7 +94,6 @@ class UserController extends Controller {
       const user = await User.find(id)
 
       return res.json(user)
-
     } catch (error) {
       return res.status(500).json({ error: 'Internal server error' })
     }
