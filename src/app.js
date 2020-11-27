@@ -1,4 +1,5 @@
 import cors from 'cors'
+import bcrypt from 'bcrypt'
 import express from 'express'
 
 import User from './models/User'
@@ -30,11 +31,13 @@ class App {
 
   async createAdminUser() {
     if (!(await User.exists({ username: 'admin' }))) {
+      const hash = await bcrypt.hash('admin', 8)
+
       await User.insert({
         name: 'Administrador',
         email: 'ti@metadil.com.br',
         username: 'admin',
-        password: 'Admin$uporte'
+        password: hash
       })
     }
   }

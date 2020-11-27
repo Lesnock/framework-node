@@ -9,16 +9,14 @@ class LoginController extends Controller {
 
     const user = await database('users').where('username', username).first()
 
-    // console.log(user)
-
-    if (!user) {
-      return res.status(401).json({ error: 'Incorrect authentication data' })
+    if (!user.id) {
+      return res.status(401).json({ error: 'Dados incorretos' })
     }
 
     const isValid = await bcrypt.compare(String(password), user.password)
 
     if (!isValid) {
-      return res.status(401).json({ error: 'Incorrect authentication data' })
+      return res.status(401).json({ error: 'Dados incorretos' })
     }
 
     const auth = new Auth()

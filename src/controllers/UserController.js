@@ -1,25 +1,24 @@
 import bcrypt from 'bcrypt'
 import User from '../models/User'
 import Controller from '../core/Controller'
-import Department from '../models/Department'
 
 class UserController extends Controller {
   async index(req, res) {
     const { filters } = req
 
-    const users = await User.findAllWithCountAndTotal({
-      filters,
-      include: [
-        {
-          model: Department,
-          type: 'belongsTo',
-          fk: 'department_id',
-          as: 'department'
-        }
-      ]
-    })
+    const users = await User.findAllWithCountAndTotal({ filters })
 
     res.json(users)
+  }
+
+  async me(req, res) {
+    const user = await User.find(req.userId)
+
+    if (!user.id) {
+      return res.status(404).json({ error: 'Usuário não encontrado' })
+    }
+
+    return res.json(user)
   }
 
   async store(req, res) {
