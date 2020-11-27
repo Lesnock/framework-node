@@ -83,6 +83,21 @@ class Model {
     return query
   }
 
+  /**
+   * Get all results from a table and attach count and total
+   * @param {*} options
+   */
+  static async findAllWithCountAndTotal(options = {}) {
+    const results = {}
+
+    results.rows = await this.findAll(options)
+
+    results.total = await this.getTotal()
+    results.count = results.rows.length
+
+    return results
+  }
+
   static addIncludeToQuery(query, include) {
     query.includes = {
       belongsTo: [],
@@ -103,16 +118,8 @@ class Model {
    * Get total count with out without params
    * @param {Object} options
    */
-  static async getTotal({ filters } = {}) {
+  static async getTotal() {
     let query = this.query()
-
-    if (filters) {
-      // Not add a limit and offset
-      filters.limit = undefined
-      filters.page = undefined
-
-      query = setFilters(query, filters, this)
-    }
 
     query.count(`${this.table}.id`, { as: 'total' })
 
@@ -120,7 +127,7 @@ class Model {
 
     const result = await query
 
-    return result.total
+    return Number(result.total)
   }
 
   /**

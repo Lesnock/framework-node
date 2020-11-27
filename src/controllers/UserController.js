@@ -1,44 +1,29 @@
 import bcrypt from 'bcrypt'
 import User from '../models/User'
 import Controller from '../core/Controller'
-// import Department from '../models/Department'
+import Department from '../models/Department'
 
 class UserController extends Controller {
   async index(req, res) {
     const { filters } = req
 
-    const response = {}
-
-    let users = await User.findAll({
-      filters
-      // include: [
-      //   {
-      //     model: Department,
-      //     type: 'belongsTo',
-      //     fk: 'department_id',
-      //     as: 'department'
-      //   },
-      //   {
-      //     model: Phone,
-      //     type: 'hasMany',
-      //     fk: 'user_id',
-      //     as: 'phones'
-      //   }
-      // ]
+    const users = await User.findAllWithCountAndTotal({
+      filters,
+      include: [
+        {
+          model: Department,
+          type: 'belongsTo',
+          fk: 'department_id',
+          as: 'department'
+        }
+      ]
     })
-    // .orderBy('phones.id', 'asc')
 
-    // let users = await User.findAll({ filters, include: [User, Department] })
-
-    response.rows = users
-    response.total = await User.getTotal({ filters })
-    response.count = response.rows.length
-
-    res.json(response)
+    res.json(users)
   }
 
   async store(req, res) {
-    const { name, email, username, password } = req.body
+    const { name, email, username, password, department_id } = req.body
 
     const hash = await bcrypt.hash(password, 8)
 
@@ -55,7 +40,8 @@ class UserController extends Controller {
         name,
         email,
         username,
-        password: hash
+        password: hash,
+        department_id
       })
 
       return res.send()
@@ -80,7 +66,12 @@ class UserController extends Controller {
   async update(req, res) {
     const { id } = req.params
 
-    const { name, email, username, password } = req.body
+    // 404
+    if (!(await User.exists({ id }))) {
+      return res.status(404).json({ error: 'Não encontrado' })
+    }
+
+    const { name, email, username, password, department_id } = req.body
 
     if (await User.exists({ username }, id)) {
       return res.status(409).json({ error: 'Nome de usuário já está em uso' })
@@ -97,7 +88,8 @@ class UserController extends Controller {
         name,
         email,
         username,
-        password: hash
+        password: hash,
+        department_id
       })
 
       const user = await User.find(id)

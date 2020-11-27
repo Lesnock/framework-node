@@ -1,8 +1,7 @@
 /**
  * Filters
  *
- * This module create filters using Knex and return the query
- * with all fitlers constructed
+ * This function add filters to a query
  *
  * Available filters:
  * sort & order
@@ -25,6 +24,10 @@ export function setFilters(query, filters, model) {
     query = query.where(function () {
       model.searchable.forEach((column) => {
         const columnType = model.columns[column].type
+
+        if (['integer', 'float'].includes(columnType)) {
+          filters.search = Number(filters.search) || 0
+        }
 
         // Column is number, boolean or date
         if (['integer', 'float', 'boolean', 'date'].includes(columnType)) {

@@ -26,10 +26,10 @@ class User extends Model {
     },
     updated_at: {
       type: 'date'
+    },
+    department_id: {
+      type: 'integer'
     }
-    // department_id: {
-    //   type: 'integer'
-    // }
   }
 
   static searchable = ['id', 'name', 'username', 'email'] // Passar
