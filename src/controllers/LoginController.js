@@ -15,7 +15,7 @@ class LoginController extends Controller {
       return res.status(401).json({ error: 'Incorrect authentication data' })
     }
 
-    const isValid = await bcrypt.compare(password, user.password)
+    const isValid = await bcrypt.compare(String(password), user.password)
 
     if (!isValid) {
       return res.status(401).json({ error: 'Incorrect authentication data' })

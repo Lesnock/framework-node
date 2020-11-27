@@ -11,6 +11,9 @@ class User extends Model {
     name: {
       type: 'string'
     },
+    email: {
+      type: 'string'
+    },
     username: {
       type: 'string'
     },
@@ -18,13 +21,19 @@ class User extends Model {
       type: 'string',
       hidden: true
     },
-    department_id: {
-      type: 'integer'
+    created_at: {
+      type: 'date'
+    },
+    updated_at: {
+      type: 'date'
     }
+    // department_id: {
+    //   type: 'integer'
+    // }
   }
 
-  static searchable = ['id', 'name', 'username'] // Passar
-  static orderable = ['id', 'name', 'username'] // Passar
+  static searchable = ['id', 'name', 'username', 'email'] // Passar
+  static orderable = ['id', 'name', 'username', 'email'] // Passar
 }
 
 export default User

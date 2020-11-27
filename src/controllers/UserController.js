@@ -1,8 +1,7 @@
 import bcrypt from 'bcrypt'
 import User from '../models/User'
-import Phone from '../models/Phone'
 import Controller from '../core/Controller'
-import Department from '../models/Department'
+// import Department from '../models/Department'
 
 class UserController extends Controller {
   async index(req, res) {
@@ -11,21 +10,21 @@ class UserController extends Controller {
     const response = {}
 
     let users = await User.findAll({
-      filters,
-      include: [
-        {
-          model: Department,
-          type: 'belongsTo',
-          fk: 'department_id',
-          as: 'department'
-        },
-        {
-          model: Phone,
-          type: 'hasMany',
-          fk: 'user_id',
-          as: 'phones'
-        }
-      ]
+      filters
+      // include: [
+      //   {
+      //     model: Department,
+      //     type: 'belongsTo',
+      //     fk: 'department_id',
+      //     as: 'department'
+      //   },
+      //   {
+      //     model: Phone,
+      //     type: 'hasMany',
+      //     fk: 'user_id',
+      //     as: 'phones'
+      //   }
+      // ]
     })
     // .orderBy('phones.id', 'asc')
 
@@ -39,21 +38,19 @@ class UserController extends Controller {
   }
 
   async store(req, res) {
-    const { name, username, password } = req.body
+    const { name, email, username, password } = req.body
 
     const hash = await bcrypt.hash(password, 8)
 
     try {
-      const userId = await User.insert({
+      await User.insert({
         name,
+        email,
         username,
-        password: hash,
-        outra: 123
+        password: hash
       })
 
-      const user = await User.find(userId)
-
-      return res.send(user)
+      return res.send()
     } catch (error) {
       return res.status(500).json({ error: 'Internal server error' })
     }
