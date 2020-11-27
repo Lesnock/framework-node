@@ -44,7 +44,11 @@ class UserController extends Controller {
 
     try {
       if (await User.exists({ username })) {
-        return res.status(409).json({ error: 'Usuário já existe' })
+        return res.status(409).json({ error: 'Nome de usuário já está em uso' })
+      }
+
+      if (await User.exists({ email })) {
+        return res.status(409).json({ error: 'Email já está em uso' })
       }
 
       await User.insert({
@@ -57,7 +61,7 @@ class UserController extends Controller {
       return res.send()
     } catch (error) {
       console.log(error)
-      return res.status(500).json({ error: 'Internal server error' })
+      return res.status(500).json({ error: 'Erro interno' })
     }
   }
 
@@ -76,19 +80,22 @@ class UserController extends Controller {
   async update(req, res) {
     const { id } = req.params
 
-    const userExists = await User.find(id)
+    const { name, email, username, password } = req.body
 
-    if (!userExists) {
-      return res.status(404).json({ error: 'Not found' })
+    if (await User.exists({ username }, id)) {
+      return res.status(409).json({ error: 'Nome de usuário já está em uso' })
     }
 
-    const { name, username, password } = req.body
+    if (await User.exists({ email }, id)) {
+      return res.status(409).json({ error: 'Email já está em uso' })
+    }
 
     const hash = await bcrypt.hash(password, 8)
 
     try {
       await User.update(id, {
         name,
+        email,
         username,
         password: hash
       })
@@ -97,25 +104,24 @@ class UserController extends Controller {
 
       return res.json(user)
     } catch (error) {
-      return res.status(500).json({ error: 'Internal server error' })
+      console.log(error)
+      return res.status(500).json({ error: 'Erro interno' })
     }
   }
 
   async delete(req, res) {
     const { id } = req.params
 
-    const user = await User.find(id)
-
-    if (!user) {
-      return res.status(404).json({ error: 'Not found' })
-    }
-
     try {
+      if (!User.exists({ id })) {
+        return res.status(404).json({ error: 'Não encontrado' })
+      }
+
       await User.delete(id)
 
       return res.send()
     } catch (error) {
-      return res.status(500).json({ error: 'Internal server error' })
+      return res.status(500).json({ error: 'Erro interno' })
     }
   }
 }
