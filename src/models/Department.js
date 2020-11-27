@@ -1,4 +1,3 @@
-import User from './User'
 import Model from '../core/Model'
 
 class Department extends Model {
@@ -13,17 +12,8 @@ class Department extends Model {
     }
   }
 
-  static associations = {
-    users: {
-      type: 'hasMany',
-      model: User,
-      column: 'department_id',
-      target: 'id'
-    }
-  }
-
-  static searchable = ['id', 'name'] // Passar
-  static orderable = ['id', 'name'] // Passar
+  static searchable = ['id', 'name']
+  static orderable = ['id', 'name']
 }
 
 export default Department
