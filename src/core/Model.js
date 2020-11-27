@@ -195,6 +195,22 @@ class Model {
     return this.query().where('id', id).del()
   }
 
+  /**
+   * Verify if a register exists in database
+   */
+  static async exists(where, ignoreId = null) {
+    const query = this.query()
+    query.where(where)
+
+    if (ignoreId) {
+      query.whereNot('id', ignoreId)
+    }
+
+    const exists = await query
+
+    return exists.length > 0
+  }
+
   static belongsTo(model) {
     console.log('rodou', model)
   }

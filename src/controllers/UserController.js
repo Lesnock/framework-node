@@ -43,6 +43,10 @@ class UserController extends Controller {
     const hash = await bcrypt.hash(password, 8)
 
     try {
+      if (await User.exists({ username })) {
+        return res.status(409).json({ error: 'Usuário já existe' })
+      }
+
       await User.insert({
         name,
         email,
@@ -52,6 +56,7 @@ class UserController extends Controller {
 
       return res.send()
     } catch (error) {
+      console.log(error)
       return res.status(500).json({ error: 'Internal server error' })
     }
   }
