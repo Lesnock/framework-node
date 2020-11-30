@@ -32,7 +32,6 @@ class App {
   async createAdminUser() {
     if (!(await User.exists({ username: 'admin' }))) {
       const hash = await bcrypt.hash('admin', 8)
-
       await User.insert({
         name: 'Administrador',
         email: 'ti@metadil.com.br',
