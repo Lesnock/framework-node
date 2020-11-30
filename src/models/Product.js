@@ -12,7 +12,9 @@ class Product extends Model {
       type: 'string'
     },
     quantity: {
-      type: 'float'
+      type: 'float',
+      label: 'Quantidade',
+      validation: ['required', 'unique']
     },
     min_quantity: {
       type: 'float'
