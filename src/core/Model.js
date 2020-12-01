@@ -49,6 +49,11 @@ class Model {
   static validationErrors = []
 
   /**
+   * Ignore ID - Used to ignore an register when updating
+   */
+  static ignoreId = null
+
+  /**
    * Get knex instance with table
    */
   static query() {

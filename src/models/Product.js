@@ -1,4 +1,6 @@
 import { string, number } from 'yup'
+import { unique } from '../modules/validations'
+
 import Model from '../core/Model'
 
 class Product extends Model {
@@ -10,7 +12,11 @@ class Product extends Model {
     },
     name: {
       label: 'Nome',
-      type: 'string'
+      type: 'string',
+      validations: {
+        insert: string().test(unique(this)),
+        update: string().test(unique(this))
+      }
     },
     quantity: {
       type: 'float',

@@ -12,21 +12,14 @@ class ProductController extends Controller {
   }
 
   async store(req, res) {
-    const { name } = req.body
-
     try {
-      // if (await Product.exists({ name })) {
-      //   return res.status(409).json({ error: 'Nome já está em uso' })
-      // }
-
       const validated = await Product.validate(req.body, 'insert')
-
       await Product.insert(validated)
 
       return res.send()
     } catch (error) {
       if (ValidationError.isError(error)) {
-        return res.status(500).json({ error: error.errors })
+        return res.status(400).json({ error: error.errors })
       }
 
       return res.status(500).json({ error: 'Erro interno' })
@@ -53,19 +46,21 @@ class ProductController extends Controller {
       return res.status(404).json({ error: 'Não encontrado' })
     }
 
-    const { name } = req.body
-
-    if (await Product.exists({ name }, id)) {
-      return res.status(409).json({ error: 'Nome já está em uso' })
-    }
-
     try {
-      await Product.update(id, req.body)
+      Product.ignoreId = id
+
+      const validated = await Product.validate(req.body, 'update')
+      await Product.update(id, validated)
 
       const result = await Product.find(id)
 
       return res.json(result)
     } catch (error) {
+      console.log(error)
+      if (ValidationError.isError(error)) {
+        return res.status(400).json({ error: error.errors })
+      }
+
       return res.status(500).json({ error: 'Erro interno' })
     }
   }
