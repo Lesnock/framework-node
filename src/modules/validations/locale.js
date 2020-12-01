@@ -3,9 +3,12 @@ import * as Yup from 'yup'
 Yup.setLocale({
   mixed: {
     default: 'Dados inválidos',
+
     required: ({ path, label }) => `O campo ${label || path} é obrigatório`,
+
     oneOf: ({ path, label, values }) =>
       `O campo ${label || path} deve ser um dos seguintes valores: ${values}`,
+
     notOneOf: ({ path, label, values }) =>
       `O campo ${
         label || path
@@ -14,31 +17,64 @@ Yup.setLocale({
   string: {
     length: ({ path, label, length }) =>
       `O campo ${label || path} deve ter exatamente ${length} caracteres`,
-    min: 'deve ter pelo menos ${min} caracteres',
-    max: 'deve ter no máximo ${max} caracteres',
-    email: 'tem o formato de e-mail inválido',
-    url: 'deve ter um formato de URL válida',
-    trim: 'não deve conter espaços no início ou no fim.',
-    lowercase: 'deve estar em maiúsculo',
-    uppercase: 'deve estar em minúsculo'
+
+    min: ({ path, label, length }) =>
+      `O campo ${label || path} deve ter no mínio ${length} caracteres`,
+
+    max: ({ path, label, length }) =>
+      `O campo ${label || path} deve ter no máximo ${length} caracteres`,
+
+    email: ({ path, label }) =>
+      `O campo ${label || path} deve ser um e-mail válido`,
+
+    url: ({ path, label }) => `O campo ${label || path} ser uma URL válida`,
+
+    trim: ({ path, label }) =>
+      `O campo ${label || path} não deve conter espaços no início e no fim`,
+
+    lowercase: ({ path, label }) =>
+      `O campo ${label || path} deve estar em minísculo`,
+
+    uppercase: ({ path, label }) =>
+      `O campo ${label || path} deve estar em maiúsculo`
   },
   number: {
-    min: 'deve ser no mínimo ${min}',
-    max: 'deve ser no máximo ${max}',
-    lessThan: 'deve ser menor que ${less}',
-    moreThan: 'deve ser maior que ${more}',
-    notEqual: 'não pode ser igual à ${notEqual}',
-    positive: 'deve ser um número posítivo',
-    negative: 'deve ser um número negativo',
-    integer: 'deve ser um número inteiro'
+    min: ({ path, label, min }) =>
+      `O campo ${label || path} deve ser no mínimo ${min}`,
+
+    max: ({ path, label, max }) =>
+      `O campo ${label || path} deve ser no máximo ${max}`,
+
+    lessThan: ({ path, label, less }) =>
+      `O campo ${label || path} deve ser menor que ${less}`,
+
+    moreThan: ({ path, label, more }) =>
+      `O campo ${label || path} deve ser maior que ${more}`,
+
+    notEqual: ({ path, label, notEqual }) =>
+      `O campo ${label || path} deve ser igual à ${notEqual}`,
+
+    positive: ({ path, label }) =>
+      `O campo ${label || path} deve ser um número positivo`,
+
+    negative: ({ path, label }) =>
+      `O campo ${label || path} deve ser um número negativo`,
+
+    integer: ({ path, label }) =>
+      `O campo ${label || path} deve ser um número inteiro`
   },
   date: {
-    min: 'deve ser maior que a data ${min}',
-    max: 'deve ser menor que a data ${max}'
+    min: ({ path, label, min }) =>
+      `A data do campo ${label || path} deve ser no mínimo ${min}`,
+
+    max: ({ path, label, max }) =>
+      `A data do campo ${label || path} deve ser no máximo ${max}`
   },
   array: {
-    min: 'deve ter no mínimo ${min} itens',
-    max: 'deve ter no máximo ${max} itens'
+    min: ({ path, label, min }) =>
+      `O campo ${label || path} deve ter no mínimo ${min}`,
+    max: ({ path, label, max }) =>
+      `O campo ${label || path} deve ter no máximo ${max}`
   }
 })
 
