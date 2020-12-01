@@ -1,5 +1,4 @@
-import { string, number } from 'yup'
-import { unique } from '../modules/validations'
+import { string, number, date } from '../modules/validations'
 
 import Model from '../core/Model'
 
@@ -8,38 +7,72 @@ class Product extends Model {
 
   static columns = {
     id: {
-      type: 'integer'
-    },
-    name: {
-      label: 'Nome',
-      type: 'string',
+      type: 'integer',
+      label: 'ID',
       validations: {
-        insert: string().test(unique(this)),
-        update: string().test(unique(this))
+        default: number()
       }
     },
+
+    name: {
+      type: 'string',
+      label: 'Nome',
+      validations: {
+        insert: string().unique(this, 'name'),
+        update: string()
+      }
+    },
+
     quantity: {
       type: 'float',
       label: 'Quantidade',
       validations: {
-        insert: number().required('O campo quantidade é obrigatório'),
-        update: number()
+        insert: number().min(0).required(),
+        update: number().min(0)
       }
     },
+
     min_quantity: {
-      type: 'float'
+      type: 'float',
+      label: 'Quantidade mínima',
+      validations: {
+        insert: number().min(0),
+        update: number().min(0)
+      }
     },
+
     unity: {
-      type: 'string'
+      type: 'string',
+      label: 'Unidade',
+      validations: {
+        insert: string().required(),
+        update: string()
+      }
     },
+
     last_price: {
-      type: 'float'
+      type: 'float',
+      label: 'Último preço pago',
+      validations: {
+        insert: number().min(0).required(),
+        update: number().min(0)
+      }
     },
+
     created_at: {
-      type: 'date'
+      type: 'date',
+      label: 'Criado em',
+      validations: {
+        default: date()
+      }
     },
+
     updated_at: {
-      type: 'date'
+      type: 'date',
+      label: 'Atualizado em',
+      validations: {
+        default: date()
+      }
     }
   }
 

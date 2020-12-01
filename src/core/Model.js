@@ -241,7 +241,7 @@ class Model {
     return this
   }
 
-  static async validate(data, validationName = 'default') {
+  static async validate(data, validationName = 'all', options = {}) {
     const validations = {}
 
     const columns = Object.keys(this.columns)
@@ -250,19 +250,21 @@ class Model {
       const column = this.columns[columnName]
 
       if (column.validations) {
-        if (!column.validations[validationName]) {
-          throw new Error(
-            `Validation ${validationName} does not exists on ${columnName} validation field`
+        if (column.validations[validationName]) {
+          validations[columnName] = column.validations[validationName].label(
+            column.label || columnName
+          )
+        } else {
+          validations[columnName] = column.validations['default'].label(
+            column.label || columnName
           )
         }
-
-        validations[columnName] = column.validations[validationName]
       }
     })
 
     const schema = object(validations)
 
-    return schema.validate(data)
+    return schema.validate(data, options)
   }
 }
 

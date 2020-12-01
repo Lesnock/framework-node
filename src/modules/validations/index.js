@@ -1,29 +1,45 @@
-/**
- * This file should export all custom validations
- */
+import Yup from './custom'
 
-/**
- * Verify uniqueness of register field
- */
-export function unique(model) {
-  const test = async (value, context) => {
-    const name = context.path
-    const createError = context.createError
+export default Yup
 
-    const exists = await model.exists(
-      { [name]: value },
-      model.ignoreId || undefined
-    )
+export const string = (label) => {
+  return Yup.string().label(label)
+}
 
-    if (exists) {
-      return createError({
-        // path: name,
-        message: `O campo ${model.columns[name].label} já está em uso`
-      })
-    }
+export const number = (label) => {
+  return Yup.number()
+    .label(label)
+    .typeError(`O campo ${label} deve ser um número`)
+}
 
-    return true
-  }
+export const mixed = (label) => {
+  return Yup.mixed().label(label)
+}
 
-  return { test }
+export const object = (label) => {
+  return Yup.object().label(label)
+}
+
+export const bool = (label) => {
+  return Yup.bool()
+    .label(label)
+    .typeError(`O campo ${label} deve ser do tipo verdadeiro/falso`)
+}
+
+export const boolean = (label) => {
+  return Yup.boolean()
+    .label(label)
+    .typeError(`O campo ${label} deve ser do tipo verdadeiro/falso`)
+}
+
+export const date = (label) => {
+  return Yup.date()
+    .label(label)
+    .typeError(`O campo ${label} deve ser do tipo data`)
+}
+
+export const array = (label) => {
+  return Yup.array()
+    .label(label)
+    .typeError(`O campo ${label} deve ser do tipo array`)
 }
