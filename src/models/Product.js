@@ -1,3 +1,4 @@
+import { string, number } from 'yup'
 import Model from '../core/Model'
 
 class Product extends Model {
@@ -6,15 +7,18 @@ class Product extends Model {
   static columns = {
     id: {
       type: 'integer'
-      // as: 'ID',
     },
     name: {
+      label: 'Nome',
       type: 'string'
     },
     quantity: {
       type: 'float',
       label: 'Quantidade',
-      validation: ['required', 'unique']
+      validations: {
+        insert: number().required('O campo quantidade é obrigatório'),
+        update: number()
+      }
     },
     min_quantity: {
       type: 'float'

@@ -1,3 +1,4 @@
+import { ValidationError } from 'yup'
 import Product from '../models/Product'
 import Controller from '../core/Controller'
 
@@ -14,14 +15,20 @@ class ProductController extends Controller {
     const { name } = req.body
 
     try {
-      if (await Product.exists({ name })) {
-        return res.status(409).json({ error: 'Nome já está em uso' })
-      }
+      // if (await Product.exists({ name })) {
+      //   return res.status(409).json({ error: 'Nome já está em uso' })
+      // }
 
-      await Product.insert(req.body)
+      const validated = await Product.validate(req.body, 'insert')
+
+      await Product.insert(validated)
 
       return res.send()
     } catch (error) {
+      if (ValidationError.isError(error)) {
+        return res.status(500).json({ error: error.errors })
+      }
+
       return res.status(500).json({ error: 'Erro interno' })
     }
   }

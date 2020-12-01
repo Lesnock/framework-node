@@ -1,3 +1,5 @@
+import { object } from 'yup'
+
 import database from '../modules/database'
 import { setFilters } from '../modules/filters'
 
@@ -35,6 +37,16 @@ class Model {
    * Define all associations
    */
   static associations = {}
+
+  /**
+   * Define if model should be validated
+   */
+  static withValidation = true
+
+  /**
+   * Validation errors
+   */
+  static validationErrors = []
 
   /**
    * Get knex instance with table
@@ -219,8 +231,33 @@ class Model {
     return exists.length > 0
   }
 
-  static belongsTo(model) {
-    console.log('rodou', model)
+  static withoutValidate() {
+    this.withValidation = false
+    return this
+  }
+
+  static async validate(data, validationName = 'default') {
+    const validations = {}
+
+    const columns = Object.keys(this.columns)
+
+    columns.forEach((columnName) => {
+      const column = this.columns[columnName]
+
+      if (column.validations) {
+        if (!column.validations[validationName]) {
+          throw new Error(
+            `Validation ${validationName} does not exists on ${columnName} validation field`
+          )
+        }
+
+        validations[columnName] = column.validations[validationName]
+      }
+    })
+
+    const schema = object(validations)
+
+    return schema.validate(data)
   }
 }
 
