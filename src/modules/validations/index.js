@@ -1,6 +1,10 @@
 /**
  * This file should export all custom validations
  */
+
+/**
+ * Verify uniqueness of register field
+ */
 export function unique(model) {
   const test = async (value, context) => {
     const name = context.path
