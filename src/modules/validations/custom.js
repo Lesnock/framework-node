@@ -1,12 +1,11 @@
 import Yup from './locale'
 
-Yup.addMethod(Yup.number, 'unique', unique)
-Yup.addMethod(Yup.string, 'unique', unique)
-Yup.addMethod(Yup.mixed, 'unique', unique)
-
 /**
  * This file should export all custom validations
  */
+Yup.addMethod(Yup.number, 'unique', unique)
+Yup.addMethod(Yup.string, 'unique', unique)
+Yup.addMethod(Yup.mixed, 'unique', unique)
 
 /**
  * Verify uniqueness of register field

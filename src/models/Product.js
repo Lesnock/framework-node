@@ -19,7 +19,7 @@ class Product extends Model {
       label: 'Nome',
       validations: {
         insert: string().unique(this, 'name'),
-        update: string()
+        update: string().unique(this, 'name')
       }
     },
 

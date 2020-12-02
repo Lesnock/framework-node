@@ -1,7 +1,5 @@
 import Yup from './custom'
 
-export default Yup
-
 export const string = (label) => {
   return Yup.string().label(label)
 }
@@ -43,3 +41,5 @@ export const array = (label) => {
     .label(label)
     .typeError(`O campo ${label} deve ser do tipo array`)
 }
+
+export default Yup
