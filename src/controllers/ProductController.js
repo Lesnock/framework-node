@@ -58,6 +58,7 @@ class ProductController extends Controller {
 
       return res.json(result)
     } catch (error) {
+      console.log(error)
       if (ValidationError.isError(error)) {
         return res.status(400).json({ error: error.errors })
       }

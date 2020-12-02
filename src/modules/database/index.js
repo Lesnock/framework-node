@@ -4,11 +4,12 @@ import knexFile from '../../../knexfile'
 import { resolveDotNotation } from '../../helpers'
 
 export function getDatabase() {
-  if (process.env.NODE_ENV === 'production') {
-    const conn = knex(knexFile.production)
+  const knexConfig = {
+    production: knexFile.production,
+    development: knexFile.development
   }
 
-  const conn = knex(knexFile.development)
+  const conn = knex(knexConfig[process.env.NODE_ENV])
 
   knexHooks(conn)
   addHooks(conn)
@@ -23,6 +24,7 @@ export function getDatabase() {
 function addHooks(database) {
   addIncludeHook(database)
   addDotNotationHook(database)
+  addCreatedAndUpdatedAtHook(database)
 }
 
 /**
@@ -141,6 +143,49 @@ function addDotNotationHook(database) {
       params.result = resolveDotNotation(params.result)
     }
   })
+}
+
+/**
+ * Automatically fill created_at and updated_at before insert and update
+ */
+function addCreatedAndUpdatedAtHook(database) {
+  database.addHook(
+    'before',
+    'insert',
+    '*',
+    async (when, method, table, params) => {
+      const data = knexHooks.helpers.getInsertData(params.query)
+
+      const rows = Array.isArray(data) ? data : [data]
+
+      const columns = await database(table).columnInfo()
+
+      if ('created_at' in columns) {
+        rows.forEach((row) => {
+          row.created_at = new Date()
+        })
+      }
+    }
+  )
+
+  database.addHook(
+    'before',
+    'update',
+    '*',
+    async (when, method, table, params) => {
+      const data = knexHooks.helpers.getUpdateData(params.query)
+
+      const rows = Array.isArray(data) ? data : [data]
+
+      const columns = await database(table).columnInfo()
+
+      if ('updated_at' in columns) {
+        rows.forEach((row) => {
+          row.updated_at = new Date()
+        })
+      }
+    }
+  )
 }
 
 export default getDatabase()
