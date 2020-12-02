@@ -30,11 +30,12 @@ class ProductController extends Controller {
   async show(req, res) {
     const { id } = req.params
 
-    const result = await Product.find(id)
-
-    if (!result) {
-      return res.status(404).json({ error: 'Not found' })
+    // 404
+    if (!(await Product.exists({ id }))) {
+      return res.status(404).json({ error: 'Não encontrado' })
     }
+
+    const result = await Product.find(id)
 
     return res.json(result)
   }
@@ -57,7 +58,6 @@ class ProductController extends Controller {
 
       return res.json(result)
     } catch (error) {
-      console.log(error)
       if (ValidationError.isError(error)) {
         return res.status(400).json({ error: error.errors })
       }
