@@ -24,7 +24,7 @@ export function unique(model) {
       const label = model.columns[path].label
 
       return createError({
-        // path: name,
+        path,
         message: `O campo ${label || path} já está em uso`
       })
     }
