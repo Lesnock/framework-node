@@ -73,6 +73,7 @@ class Product extends Model {
     created_at: {
       type: 'date',
       label: 'Criado em',
+      searchable: true,
       orderable: true,
       validations: {
         default: date()
@@ -83,6 +84,7 @@ class Product extends Model {
       type: 'date',
       label: 'Atualizado em',
       orderable: true,
+      searchable: true,
       validations: {
         default: date()
       }

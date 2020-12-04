@@ -1,3 +1,6 @@
+import { isValid, format, parse } from 'date-fns'
+import { zonedTimeToUtc } from 'date-fns-tz'
+
 /**
  * Filters
  *
@@ -39,38 +42,76 @@ export function setFilters(query, filters, model) {
 
         if (['integer', 'float'].includes(columnType)) {
           search = Number(filters.search) || 0
+          return this.orWhere(`${model.table}.${column}`, search)
         }
 
-        // Column is number, boolean or date
-        if (['integer', 'float', 'boolean', 'date'].includes(columnType)) {
-          console.log(`${model.table}.${column}`, search)
-          this.orWhere(`${model.table}.${column}`, search)
+        // Date
+        if (['date'].includes(columnType)) {
+          const date = new Date(search)
+
+          parse(search, 'yyyy-MM-dd', new Date())
+
+          if (isValid(date)) {
+            return this.orWhereBetween(`${model.table}.${column}`, [
+              parse(`${search} 00:00`, 'yyyy-MM-dd HH:mm', new Date()),
+              parse(`${search} 23:59`, 'yyyy-MM-dd HH:mm', new Date())
+            ])
+          }
+
+          return
         }
-        // Column is string
-        else {
-          console.log(`${model.table}.${column}`, 'ilike', `%${search}%`)
-          this.orWhere(`${model.table}.${column}`, 'ilike', `%${search}%`)
-        }
+
+        return this.orWhere(`${model.table}.${column}`, 'ilike', `%${search}%`)
       })
     })
   }
 
   // ======== Field Search =========
-  // if (filters.fieldsearch) {
-  //   const fields = Object.keys(filters.fieldsearch)
+  if (filters.fieldsearch) {
+    console.log(filters.fieldsearch)
+    if (typeof filters.fieldsearch === 'string') {
+      filters.fieldsearch = JSON.parse(filters.fieldsearch)
+    }
 
-  //   fields.forEach((field) => {
-  //     if (!model.columns[field].searchable) {
-  //       return
-  //     }
+    const fields = Object.keys(filters.fieldsearch)
 
-  //     const columnType = model.columns[field].type
+    query.where(function () {
+      fields.forEach((field) => {
+        if (!model.columns[field].searchable) {
+          return
+        }
 
-  //     if (['integer', 'float'].includes(columnType)) {
-  //       filters.search = Number(filters.search) || 0
-  //     }
-  //   })
-  // }
+        let search = filters.fieldsearch[field]
+
+        const columnType = model.columns[field].type
+
+        // Number
+        if (['integer', 'float'].includes(columnType)) {
+          search = Number(search) || 0
+          return this.where(`${model.table}.${field}`, search)
+        }
+
+        // Date
+        if (['date'].includes(columnType)) {
+          const date = new Date(search)
+
+          parse(search, 'yyyy-MM-dd', new Date())
+
+          if (isValid(date)) {
+            return this.whereBetween(`${model.table}.${field}`, [
+              parse(`${search} 00:00`, 'yyyy-MM-dd HH:mm', new Date()),
+              parse(`${search} 23:59`, 'yyyy-MM-dd HH:mm', new Date())
+            ])
+          }
+
+          return
+        }
+
+        // Column is string
+        return this.where(`${model.table}.${field}`, 'ilike', `%${search}%`)
+      })
+    })
+  }
 
   // ======== Page =========
   const limit = filters.limit ? Number(filters.limit) : model.defaultLimit

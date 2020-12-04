@@ -1,7 +1,14 @@
 /**
  * All filters that should be included in the req.filters
  */
-var availableFilters = ['sort', 'order', 'page', 'limit', 'search']
+var availableFilters = [
+  'sort',
+  'order',
+  'page',
+  'limit',
+  'search',
+  'fieldsearch'
+]
 
 /**
  * Separate all filters from query to req.filters prop

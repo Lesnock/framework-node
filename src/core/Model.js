@@ -1,5 +1,4 @@
 import { object } from 'yup'
-import knex from 'knex'
 
 import database from '../modules/database'
 import { setFilters } from '../modules/filters'
