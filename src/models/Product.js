@@ -9,6 +9,8 @@ class Product extends Model {
     id: {
       type: 'integer',
       label: 'ID',
+      searchable: true,
+      orderable: true,
       validations: {
         default: number()
       }
@@ -17,6 +19,8 @@ class Product extends Model {
     name: {
       type: 'string',
       label: 'Nome',
+      searchable: true,
+      orderable: true,
       validations: {
         insert: string().unique(this, 'name'),
         update: string().unique(this, 'name')
@@ -26,6 +30,8 @@ class Product extends Model {
     quantity: {
       type: 'float',
       label: 'Quantidade',
+      searchable: true,
+      orderable: true,
       validations: {
         insert: number().min(0).required(),
         update: number().min(0)
@@ -35,6 +41,8 @@ class Product extends Model {
     min_quantity: {
       type: 'float',
       label: 'Quantidade mínima',
+      searchable: true,
+      orderable: true,
       validations: {
         insert: number().min(0),
         update: number().min(0)
@@ -44,6 +52,8 @@ class Product extends Model {
     unity: {
       type: 'string',
       label: 'Unidade',
+      searchable: true,
+      orderable: true,
       validations: {
         insert: string().required(),
         update: string()
@@ -53,6 +63,7 @@ class Product extends Model {
     last_price: {
       type: 'float',
       label: 'Último preço pago',
+      orderable: true,
       validations: {
         insert: number().min(0).required(),
         update: number().min(0)
@@ -62,6 +73,7 @@ class Product extends Model {
     created_at: {
       type: 'date',
       label: 'Criado em',
+      orderable: true,
       validations: {
         default: date()
       }
@@ -70,22 +82,12 @@ class Product extends Model {
     updated_at: {
       type: 'date',
       label: 'Atualizado em',
+      orderable: true,
       validations: {
         default: date()
       }
     }
   }
-
-  static searchable = ['id', 'name', 'unity']
-
-  static orderable = [
-    'id',
-    'name',
-    'quantity',
-    'min_quantity',
-    'unity',
-    'last_price'
-  ]
 }
 
 export default Product

@@ -1,4 +1,5 @@
 import { object } from 'yup'
+import knex from 'knex'
 
 import database from '../modules/database'
 import { setFilters } from '../modules/filters'
@@ -109,7 +110,7 @@ class Model {
 
     results.rows = await this.findAll(options)
 
-    results.total = await this.getTotal()
+    results.total = await this.getTotal(options.filters)
     results.count = results.rows.length
 
     return results
@@ -136,16 +137,21 @@ class Model {
    * Get total count with out without params
    * @param {Object} options
    */
-  static async getTotal() {
+  static async getTotal(filters = {}) {
     let query = this.query()
 
-    query.count(`${this.table}.id`, { as: 'total' })
+    query.select('id')
 
-    query.first()
+    if (filters) {
+      filters.limit = undefined
+      filters.page = undefined
+
+      query = setFilters(query, filters, this)
+    }
 
     const result = await query
 
-    return Number(result.total)
+    return result.length
   }
 
   /**

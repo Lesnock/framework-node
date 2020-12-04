@@ -6,15 +6,20 @@
  * Available filters:
  * sort & order
  * search
+ * field search
  * limit
  * page
  */
 
 export function setFilters(query, filters, model) {
+  const columnNames = Object.keys(model.columns)
+
   // ======== Sort and order =========
   if (filters.sort) {
-    if (model.orderable.includes(filters.sort)) {
-      query = query.orderBy(`${model.table}.${filters.sort}`, filters.order)
+    if (model.columns[filters.sort]) {
+      if (model.columns[filters.sort].orderable) {
+        query = query.orderBy(`${model.table}.${filters.sort}`, filters.order)
+      }
     }
   }
 
@@ -22,28 +27,50 @@ export function setFilters(query, filters, model) {
   if (filters.search) {
     // Create grouped "or where"
     query = query.where(function () {
-      model.searchable.forEach((column) => {
+      // Search for each column
+      columnNames.forEach((column) => {
+        if (!model.columns[column].searchable) {
+          return
+        }
+
+        let search = filters.search
+
         const columnType = model.columns[column].type
 
         if (['integer', 'float'].includes(columnType)) {
-          filters.search = Number(filters.search) || 0
+          search = Number(filters.search) || 0
         }
 
         // Column is number, boolean or date
         if (['integer', 'float', 'boolean', 'date'].includes(columnType)) {
-          this.orWhere(`${model.table}.${column}`, filters.search)
+          console.log(`${model.table}.${column}`, search)
+          this.orWhere(`${model.table}.${column}`, search)
         }
         // Column is string
         else {
-          this.orWhere(
-            `${model.table}.${column}`,
-            'like',
-            `%${filters.search}%`
-          )
+          console.log(`${model.table}.${column}`, 'ilike', `%${search}%`)
+          this.orWhere(`${model.table}.${column}`, 'ilike', `%${search}%`)
         }
       })
     })
   }
+
+  // ======== Field Search =========
+  // if (filters.fieldsearch) {
+  //   const fields = Object.keys(filters.fieldsearch)
+
+  //   fields.forEach((field) => {
+  //     if (!model.columns[field].searchable) {
+  //       return
+  //     }
+
+  //     const columnType = model.columns[field].type
+
+  //     if (['integer', 'float'].includes(columnType)) {
+  //       filters.search = Number(filters.search) || 0
+  //     }
+  //   })
+  // }
 
   // ======== Page =========
   const limit = filters.limit ? Number(filters.limit) : model.defaultLimit
