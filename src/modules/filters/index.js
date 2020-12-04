@@ -1,5 +1,4 @@
-import { isValid, format, parse } from 'date-fns'
-import { zonedTimeToUtc } from 'date-fns-tz'
+import { isValid, parse } from 'date-fns'
 
 /**
  * Filters
@@ -9,7 +8,7 @@ import { zonedTimeToUtc } from 'date-fns-tz'
  * Available filters:
  * sort & order
  * search
- * field search
+ * fieldsearch
  * limit
  * page
  */
@@ -68,7 +67,6 @@ export function setFilters(query, filters, model) {
 
   // ======== Field Search =========
   if (filters.fieldsearch) {
-    console.log(filters.fieldsearch)
     if (typeof filters.fieldsearch === 'string') {
       filters.fieldsearch = JSON.parse(filters.fieldsearch)
     }
