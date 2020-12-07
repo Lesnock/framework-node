@@ -40,9 +40,11 @@ export function setFilters(query, filters, model) {
         const columnType = model.columns[column].type
 
         if (columnType === 'integer') {
-          if (!Number.isInteger(search)) {
+          if (!Number.isInteger(Number(search)) && Number(search) % 1 !== 0) {
             return
           }
+
+          return this.orWhere(`${model.table}.${column}`, Number(search))
         }
 
         if (columnType === 'float') {
@@ -99,9 +101,11 @@ export function setFilters(query, filters, model) {
 
         // Integer
         if (columnType === 'integer') {
-          if (!Number.isInteger(search)) {
+          if (!Number.isInteger(search) && Number(search) % 1 !== 0) {
             return
           }
+
+          return this.orWhere(`${model.table}.${field}`, Number(search))
         }
 
         // Float
