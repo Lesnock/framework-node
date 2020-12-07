@@ -16,6 +16,26 @@ class Product extends Model {
       }
     },
 
+    protheus_cod: {
+      type: 'string',
+      label: 'Cód. Protheus',
+      searchable: true,
+      orderable: true,
+      validations: {
+        default: string().unique(this, 'protheus_cod')
+      }
+    },
+
+    ncm: {
+      type: 'string',
+      label: 'NCM',
+      searchable: true,
+      orderable: true,
+      validations: {
+        default: string()
+      }
+    },
+
     name: {
       type: 'string',
       label: 'Nome',
@@ -44,8 +64,19 @@ class Product extends Model {
       searchable: false,
       orderable: true,
       validations: {
-        insert: number().min(0),
-        update: number().min(0)
+        insert: number().min(1).required(),
+        update: number().min(1)
+      }
+    },
+
+    max_quantity: {
+      type: 'float',
+      label: 'Quantidade máxima',
+      searchable: false,
+      orderable: true,
+      validations: {
+        insert: number().min(1).required(),
+        update: number().min(1)
       }
     },
 
@@ -64,6 +95,7 @@ class Product extends Model {
       type: 'float',
       label: 'Último preço pago',
       orderable: true,
+      searchable: false,
       validations: {
         insert: number().min(0).required(),
         update: number().min(0)
