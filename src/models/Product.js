@@ -30,7 +30,7 @@ class Product extends Model {
     quantity: {
       type: 'float',
       label: 'Quantidade',
-      searchable: true,
+      searchable: false,
       orderable: true,
       validations: {
         insert: number().min(0).required(),
@@ -41,7 +41,7 @@ class Product extends Model {
     min_quantity: {
       type: 'float',
       label: 'Quantidade mínima',
-      searchable: true,
+      searchable: false,
       orderable: true,
       validations: {
         insert: number().min(0),
@@ -73,7 +73,7 @@ class Product extends Model {
     created_at: {
       type: 'date',
       label: 'Criado em',
-      searchable: true,
+      searchable: false,
       orderable: true,
       validations: {
         default: date()
@@ -84,7 +84,7 @@ class Product extends Model {
       type: 'date',
       label: 'Atualizado em',
       orderable: true,
-      searchable: true,
+      searchable: false,
       validations: {
         default: date()
       }

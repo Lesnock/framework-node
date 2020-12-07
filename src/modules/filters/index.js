@@ -1,4 +1,4 @@
-import { isValid, parse } from 'date-fns'
+import { isValid, parse, format } from 'date-fns'
 
 /**
  * Filters
@@ -48,12 +48,20 @@ export function setFilters(query, filters, model) {
         if (['date'].includes(columnType)) {
           const date = new Date(search)
 
-          parse(search, 'yyyy-MM-dd', new Date())
+          // parse(search, 'yyyy-MM-dd', new Date())
 
           if (isValid(date)) {
             return this.orWhereBetween(`${model.table}.${column}`, [
-              parse(`${search} 00:00`, 'yyyy-MM-dd HH:mm', new Date()),
-              parse(`${search} 23:59`, 'yyyy-MM-dd HH:mm', new Date())
+              parse(
+                `${format(date, 'yyyy-MM-dd')} 00:00`,
+                'yyyy-MM-dd HH:mm',
+                new Date()
+              ),
+              parse(
+                `${format(date, 'yyyy-MM-dd')} 23:59`,
+                'yyyy-MM-dd HH:mm',
+                new Date()
+              )
             ])
           }
 
@@ -97,8 +105,16 @@ export function setFilters(query, filters, model) {
 
           if (isValid(date)) {
             return this.whereBetween(`${model.table}.${field}`, [
-              parse(`${search} 00:00`, 'yyyy-MM-dd HH:mm', new Date()),
-              parse(`${search} 23:59`, 'yyyy-MM-dd HH:mm', new Date())
+              parse(
+                `${format(date, 'yyyy-MM-dd')} 00:00`,
+                'yyyy-MM-dd HH:mm',
+                new Date()
+              ),
+              parse(
+                `${format(date, 'yyyy-MM-dd')} 23:59`,
+                'yyyy-MM-dd HH:mm',
+                new Date()
+              )
             ])
           }
 
