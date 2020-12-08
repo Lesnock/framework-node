@@ -1,4 +1,5 @@
 import { ValidationError } from 'yup'
+
 import Product from '../models/Product'
 import Controller from '../core/Controller'
 
@@ -14,15 +15,20 @@ class ProductController extends Controller {
   async store(req, res) {
     try {
       const validated = await Product.validate(req.body, 'insert')
+
       await Product.insert(validated)
 
       return res.send()
     } catch (error) {
       if (ValidationError.isError(error)) {
-        return res.status(400).json({ error: error.errors })
+        const formErrors = {}
+
+        error.inner.forEach((err) => (formErrors[err.path] = err.message))
+
+        return res.status(400).json({ success: false, formErrors })
       }
 
-      return res.status(500).json({ error: 'Erro interno' })
+      return res.status(500).json({ error })
     }
   }
 

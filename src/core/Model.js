@@ -269,7 +269,7 @@ class Model {
 
     const schema = object(validations)
 
-    return schema.validate(data, options)
+    return schema.validate(data, { abortEarly: false, ...options })
   }
 }
 
