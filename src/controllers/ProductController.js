@@ -21,14 +21,11 @@ class ProductController extends Controller {
       return res.send()
     } catch (error) {
       if (ValidationError.isError(error)) {
-        const formErrors = {}
-
-        error.inner.forEach((err) => (formErrors[err.path] = err.message))
-
-        return res.status(400).json({ success: false, formErrors })
+        console.log(error.errors)
+        return res.status(400).json({ error: error.errors })
       }
 
-      return res.status(500).json({ success: false, error })
+      return res.status(500).json({ error: 'Erro interno' })
     }
   }
 
@@ -63,13 +60,12 @@ class ProductController extends Controller {
 
       return res.json(result)
     } catch (error) {
-      console.log(error)
       if (ValidationError.isError(error)) {
         console.log(error.errors)
         return res.status(400).json({ error: error.errors })
       }
 
-      return res.status(500).json({ success: false, error: 'Erro interno' })
+      return res.status(500).json({ error: 'Erro interno' })
     }
   }
 

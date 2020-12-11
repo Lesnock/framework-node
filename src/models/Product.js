@@ -64,8 +64,8 @@ class Product extends Model {
       searchable: false,
       orderable: true,
       validations: {
-        insert: number().min(1).required(),
-        update: number().min(1)
+        insert: number().min(0).required(),
+        update: number().min(0)
       }
     },
 
@@ -75,8 +75,8 @@ class Product extends Model {
       searchable: false,
       orderable: true,
       validations: {
-        insert: number().min(1).required(),
-        update: number().min(1)
+        insert: number().min(0).required(),
+        update: number().min(0)
       }
     },
 

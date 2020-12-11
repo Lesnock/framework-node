@@ -15,6 +15,10 @@ export function unique(model) {
     const { path } = context
     const createError = context.createError
 
+    if (value === null) {
+      return true
+    }
+
     const exists = await model.exists(
       { [path]: value },
       model.ignoreId || undefined
@@ -25,7 +29,7 @@ export function unique(model) {
 
       return createError({
         path,
-        message: `O campo ${label || path} já está em uso`
+        message: `Já existe um registro com o mesmo ${label || path}`
       })
     }
 
