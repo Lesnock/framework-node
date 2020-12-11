@@ -255,21 +255,16 @@ class Model {
       const column = this.columns[columnName]
 
       if (column.validations) {
-        if (column.validations[validationName]) {
-          validations[columnName] = column.validations[validationName].label(
-            column.label || columnName
-          )
-        } else {
-          validations[columnName] = column.validations['default'].label(
-            column.label || columnName
-          )
-        }
+        const validation =
+          column.validations[validationName] || column.validations['default']
+
+        validations[columnName] = validation.label(column.label || columnName)
       }
     })
 
     const schema = object(validations)
 
-    return schema.validate(data, { abortEarly: false, ...options })
+    return schema.validate(data, options)
   }
 }
 

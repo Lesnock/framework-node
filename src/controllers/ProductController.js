@@ -28,7 +28,7 @@ class ProductController extends Controller {
         return res.status(400).json({ success: false, formErrors })
       }
 
-      return res.status(500).json({ error })
+      return res.status(500).json({ success: false, error })
     }
   }
 
@@ -63,11 +63,13 @@ class ProductController extends Controller {
 
       return res.json(result)
     } catch (error) {
+      console.log(error)
       if (ValidationError.isError(error)) {
+        console.log(error.errors)
         return res.status(400).json({ error: error.errors })
       }
 
-      return res.status(500).json({ error: 'Erro interno' })
+      return res.status(500).json({ success: false, error: 'Erro interno' })
     }
   }
 

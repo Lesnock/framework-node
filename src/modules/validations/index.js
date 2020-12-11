@@ -1,45 +1,39 @@
 import Yup from './custom'
 
-export const string = (label) => {
-  return Yup.string().label(label)
+export const string = () => {
+  return Yup.string().typeError('O campo ${label} deve ser do tipo texto')
 }
 
-export const number = (label) => {
-  return Yup.number()
-    .label(label)
-    .typeError(`O campo ${label} deve ser um número`)
+export const number = () => {
+  return Yup.number().typeError('O campo ${label} deve ser um número')
 }
 
-export const mixed = (label) => {
-  return Yup.mixed().label(label)
+export const mixed = () => {
+  return Yup.mixed()
 }
 
-export const object = (label) => {
-  return Yup.object().label(label)
+export const object = () => {
+  return Yup.object().typeError('O campo ${label} deve ser do tipo objeto')
 }
 
-export const bool = (label) => {
-  return Yup.bool()
-    .label(label)
-    .typeError(`O campo ${label} deve ser do tipo verdadeiro/falso`)
+export const bool = () => {
+  return Yup.bool().typeError(
+    'O campo ${label} deve ser do tipo verdadeiro/falso'
+  )
 }
 
-export const boolean = (label) => {
-  return Yup.boolean()
-    .label(label)
-    .typeError(`O campo ${label} deve ser do tipo verdadeiro/falso`)
+export const boolean = () => {
+  return Yup.boolean().typeError(
+    'O campo ${label} deve ser do tipo verdadeiro/falso'
+  )
 }
 
-export const date = (label) => {
-  return Yup.date()
-    .label(label)
-    .typeError(`O campo ${label} deve ser do tipo data`)
+export const date = () => {
+  return Yup.date().typeError('O campo ${label} deve ser do tipo data')
 }
 
-export const array = (label) => {
-  return Yup.array()
-    .label(label)
-    .typeError(`O campo ${label} deve ser do tipo array`)
+export const array = () => {
+  return Yup.array().typeError('O campo ${label} deve ser do tipo array')
 }
 
 export default Yup

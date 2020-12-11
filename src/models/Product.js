@@ -22,7 +22,7 @@ class Product extends Model {
       searchable: true,
       orderable: true,
       validations: {
-        default: string().unique(this, 'protheus_cod')
+        default: string('Cód. Protheus').nullable().unique(this, 'protheus_cod')
       }
     },
 
@@ -42,7 +42,7 @@ class Product extends Model {
       searchable: true,
       orderable: true,
       validations: {
-        insert: string().unique(this, 'name'),
+        insert: string().required().unique(this, 'name'),
         update: string().unique(this, 'name')
       }
     },
@@ -97,7 +97,7 @@ class Product extends Model {
       orderable: true,
       searchable: false,
       validations: {
-        insert: number().min(0).required(),
+        insert: number().min(0),
         update: number().min(0)
       }
     },
