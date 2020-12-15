@@ -1,3 +1,5 @@
+import { string, number, date } from '../modules/validations'
+
 import Model from '../core/Model'
 
 class User extends Model {
@@ -5,35 +7,89 @@ class User extends Model {
 
   static columns = {
     id: {
-      type: 'integer'
-      // as: 'ID',
+      type: 'integer',
+      label: 'ID',
+      searchable: true,
+      orderable: true,
+      validations: {
+        default: number()
+      }
     },
+
     name: {
-      type: 'string'
+      type: 'string',
+      label: 'Nome',
+      searchable: true,
+      orderable: true,
+      validations: {
+        insert: string().nullable().required(),
+        update: string().nullable()
+      }
     },
+
     email: {
-      type: 'string'
+      type: 'string',
+      label: 'Email',
+      searchable: true,
+      orderable: true,
+      validations: {
+        insert: string().nullable().required().unique(this, 'email'),
+        update: string().nullable().unique(this, 'email')
+      }
     },
+
     username: {
-      type: 'string'
+      type: 'string',
+      label: 'Nome de usuário',
+      searchable: true,
+      orderable: true,
+      validations: {
+        insert: string().nullable().required().unique(this, 'username'),
+        update: string().nullable().unique(this, 'username')
+      }
     },
+
     password: {
       type: 'string',
-      hidden: true
+      label: 'Senha',
+      searchable: true,
+      orderable: true,
+      hidden: true,
+      validations: {
+        insert: string().nullable().required(),
+        update: string().nullable()
+      }
     },
-    created_at: {
-      type: 'date'
-    },
-    updated_at: {
-      type: 'date'
-    },
+
     department_id: {
-      type: 'integer'
+      type: 'integer',
+      searchable: false,
+      orderable: true,
+      validations: {
+        default: number().required()
+      }
+    },
+
+    created_at: {
+      type: 'date',
+      label: 'Criado em',
+      searchable: false,
+      orderable: true,
+      validations: {
+        default: date()
+      }
+    },
+
+    updated_at: {
+      type: 'date',
+      label: 'Atualizado em',
+      orderable: true,
+      searchable: false,
+      validations: {
+        default: date()
+      }
     }
   }
-
-  static searchable = ['id', 'name', 'username', 'email'] // Passar
-  static orderable = ['id', 'name', 'username', 'email'] // Passar
 }
 
 export default User

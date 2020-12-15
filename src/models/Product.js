@@ -42,8 +42,8 @@ class Product extends Model {
       searchable: true,
       orderable: true,
       validations: {
-        insert: string().required().unique(this, 'name'),
-        update: string().unique(this, 'name')
+        insert: string().nullable().required().unique(this, 'name'),
+        update: string().nullable().unique(this, 'name')
       }
     },
 

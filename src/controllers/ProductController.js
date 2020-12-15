@@ -8,12 +8,6 @@ class ProductController extends ResourceController {
     this.model = Product
   }
 
-  /**
-   * Hooks
-   *
-   * Are used to interact with the resource controller methods
-   */
-
   // Should return the list to be displayed
   // async list(req, res) {}
 

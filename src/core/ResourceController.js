@@ -73,7 +73,6 @@ class ResourceController extends Controller {
       return res.send()
     } catch (error) {
       if (ValidationError.isError(error)) {
-        console.log(error.errors)
         return res.status(400).json({ error: error.errors })
       }
 
@@ -110,7 +109,6 @@ class ResourceController extends Controller {
       return res.json(result)
     } catch (error) {
       if (ValidationError.isError(error)) {
-        console.log(error.errors)
         return res.status(400).json({ error: error.errors })
       }
 
@@ -122,7 +120,7 @@ class ResourceController extends Controller {
     const { id } = req.params
 
     try {
-      if (!this.model.exists({ id })) {
+      if (!(await this.model.exists({ id }))) {
         return res.status(404).json({ error: 'Não encontrado' })
       }
 
