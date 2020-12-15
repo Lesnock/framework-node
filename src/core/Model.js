@@ -54,6 +54,11 @@ class Model {
   static ignoreId = null
 
   /**
+   * Primary key
+   */
+  static primaryKey = 'id'
+
+  /**
    * Get knex instance with table
    */
   static query() {
@@ -122,7 +127,7 @@ class Model {
       hasMany: []
     }
 
-    include.forEach(({ model, type, fk, target = 'id', as }) => {
+    include.forEach(({ model, type, fk, target = this.primaryKey, as }) => {
       if (!model || !type || !fk) {
         throw new Error('All includes should have at least: model, type and fk')
       }
@@ -139,7 +144,7 @@ class Model {
   static async getTotal(filters = {}) {
     let query = this.query()
 
-    query.select(this.primaryKey || 'id')
+    query.select(this.primaryKey)
 
     if (filters) {
       filters.limit = undefined
@@ -157,15 +162,15 @@ class Model {
    * Get a single record by id
    * @param {*} id
    */
-  static async find(id) {
+  static async find(primaryKey, options = {}) {
     const query = this.query()
       .select(this.mountAttributes())
-      .where(this.primaryKey || 'id', id)
+      .where(this.primaryKey, primaryKey)
 
-    if (this.defaultAttributes) {
-      query.select(
-        this.defaultAttributes.map((attr) => `${this.table}.${attr}`)
-      )
+    query.select(this.mountAttributes())
+
+    if (options.include) {
+      this.addIncludeToQuery(query, options.include)
     }
 
     return query.first()
@@ -179,9 +184,7 @@ class Model {
   static async findBy(column, value) {
     const query = this.query().where(column, value)
 
-    if (this.defaultAttributes) {
-      query.select(this.defaultAttributes)
-    }
+    query.select(this.mountAttributes())
 
     return query.first()
   }
@@ -207,7 +210,7 @@ class Model {
    * Update data
    * @param {*} data
    */
-  static async update(id, data) {
+  static async update(primaryKey, data) {
     const columns = Object.keys(data)
 
     // Remove all columns that does not exists in database
@@ -217,14 +220,14 @@ class Model {
       }
     })
 
-    return this.query().where('id', id).update(data)
+    return this.query().where(this.primaryKey, primaryKey).update(data)
   }
 
   /**
    * Delete record
    */
-  static async delete(id) {
-    return this.query().where('id', id).del()
+  static async delete(primaryKey) {
+    return this.query().where(this.primaryKey, primaryKey).del()
   }
 
   /**
@@ -235,7 +238,7 @@ class Model {
     query.where(where)
 
     if (ignoreId) {
-      query.whereNot('id', ignoreId)
+      query.whereNot(this.primaryKey, ignoreId)
     }
 
     const exists = await query

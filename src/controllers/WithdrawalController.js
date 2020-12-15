@@ -27,7 +27,20 @@ class WithdrawalController extends ResourceController {
   }
 
   // Hook - Should return a unique register
-  // async get(req, res) {}
+  async get(req) {
+    const { id } = req.params
+
+    return await Withdrawal.find(id, {
+      include: [
+        {
+          model: WithdrawalItem,
+          type: 'hasMany',
+          fk: 'withdrawal_uuid',
+          target: 'uuid'
+        }
+      ]
+    })
+  }
 
   // Hook - Should insert a register
   async insert(req) {

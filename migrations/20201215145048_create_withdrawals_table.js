@@ -1,5 +1,6 @@
 exports.up = function (knex) {
   return knex.schema.createTable('withdrawals', (table) => {
+    table.increments()
     table.string('uuid')
     table.string('person')
     table.text('obs')
