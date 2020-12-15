@@ -13,14 +13,13 @@ import { ValidationError } from 'yup'
  *
  * The hooks are the methods that are used to change just the crud actions, keeping
  * the default [Request - Response] structures.
- * The hooks are inside the others methods, and they are use to "inject" code to the
+ * The hooks are used inside the others methods, and they are used to "inject" code to the
  * default resource methods.
  *
  * With hooks, you can modify the database actions, without having to write all the
  * Request and Response logic.
  *
  * Overwrite the methods list, get, insert, change and destroy to change just
- *
  * the crud actions
  */
 class ResourceController extends Controller {
