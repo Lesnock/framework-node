@@ -12,6 +12,10 @@ Yup.addMethod(Yup.mixed, 'unique', unique)
  */
 export function unique(model) {
   return this.test('unique', async (value, context) => {
+    if (!value) {
+      return true
+    }
+
     const { path } = context
     const createError = context.createError
 

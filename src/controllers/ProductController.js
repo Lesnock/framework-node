@@ -1,89 +1,33 @@
-import { ValidationError } from 'yup'
-
 import Product from '../models/Product'
-import Controller from '../core/Controller'
+import ResourceController from '../core/ResourceController'
 
-class ProductController extends Controller {
-  async index(req, res) {
-    const { filters } = req
+class ProductController extends ResourceController {
+  constructor() {
+    super()
 
-    const results = await Product.findAllWithCountAndTotal({ filters })
-
-    res.json(results)
+    this.model = Product
   }
 
-  async store(req, res) {
-    try {
-      const validated = await Product.validate(req.body, 'insert')
+  /**
+   * Hooks
+   *
+   * Are used to interact with the resource controller methods
+   */
 
-      await Product.insert(validated)
+  // Should return the list to be displayed
+  // async list(req, res) {}
 
-      return res.send()
-    } catch (error) {
-      if (ValidationError.isError(error)) {
-        console.log(error.errors)
-        return res.status(400).json({ error: error.errors })
-      }
+  // Should return a unique register
+  // async get(req, res) {}
 
-      return res.status(500).json({ error: 'Erro interno' })
-    }
-  }
+  // Should insert a register
+  // async insert(req, res) {}
 
-  async show(req, res) {
-    const { id } = req.params
+  // Should update a register
+  // async update(req, res) {}
 
-    // 404
-    if (!(await Product.exists({ id }))) {
-      return res.status(404).json({ error: 'Não encontrado' })
-    }
-
-    const result = await Product.find(id)
-
-    return res.json(result)
-  }
-
-  async update(req, res) {
-    const { id } = req.params
-
-    // 404
-    if (!(await Product.exists({ id }))) {
-      return res.status(404).json({ error: 'Não encontrado' })
-    }
-
-    try {
-      Product.ignoreId = id
-
-      const validated = await Product.validate(req.body, 'update')
-      await Product.update(id, validated)
-
-      const result = await Product.find(id)
-
-      return res.json(result)
-    } catch (error) {
-      if (ValidationError.isError(error)) {
-        console.log(error.errors)
-        return res.status(400).json({ error: error.errors })
-      }
-
-      return res.status(500).json({ error: 'Erro interno' })
-    }
-  }
-
-  async delete(req, res) {
-    const { id } = req.params
-
-    try {
-      if (!Product.exists({ id })) {
-        return res.status(404).json({ error: 'Não encontrado' })
-      }
-
-      await Product.delete(id)
-
-      return res.send()
-    } catch (error) {
-      return res.status(500).json({ error: 'Erro interno' })
-    }
-  }
+  // Should delete a register
+  // async destroy(req, res) {}
 }
 
 export default new ProductController()
