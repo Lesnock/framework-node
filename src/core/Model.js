@@ -139,7 +139,7 @@ class Model {
   static async getTotal(filters = {}) {
     let query = this.query()
 
-    query.select('id')
+    query.select(this.primaryKey || 'id')
 
     if (filters) {
       filters.limit = undefined

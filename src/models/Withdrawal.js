@@ -1,18 +1,20 @@
-import { string, number, date } from '../modules/validations'
+import { string, date } from '../modules/validations'
 
 import Model from '../core/Model'
 
 class Withdrawal extends Model {
   static table = 'withdrawals'
 
+  static primaryKey = 'uuid'
+
   static columns = {
-    id: {
-      type: 'integer',
+    uuid: {
+      type: 'string',
       label: 'ID',
       searchable: true,
       orderable: true,
       validations: {
-        default: number()
+        default: string()
       }
     },
 

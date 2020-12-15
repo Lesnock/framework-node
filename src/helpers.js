@@ -1,3 +1,5 @@
+import { v4 } from 'uuid'
+
 /**
  * Get controller action with bind to controller
  * @param {*} controller
@@ -53,4 +55,11 @@ export function resolveDotNotation(dotNotationObj = {}) {
   }
 
   return resolved
+}
+
+/**
+ * Generate UUID V4
+ */
+export function uuidv4() {
+  return v4()
 }

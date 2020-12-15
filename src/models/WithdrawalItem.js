@@ -1,4 +1,4 @@
-import { number, date } from '../modules/validations'
+import { string, number, date } from '../modules/validations'
 
 import Model from '../core/Model'
 
@@ -16,13 +16,13 @@ class WithdrawalItem extends Model {
       }
     },
 
-    withdrawal_id: {
+    withdrawal_uuid: {
       type: 'integer',
       label: 'ID da entrega',
       searchable: true,
       orderable: true,
       validations: {
-        default: number()
+        default: string()
       }
     },
 

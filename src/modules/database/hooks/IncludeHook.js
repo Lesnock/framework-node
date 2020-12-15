@@ -71,6 +71,7 @@ export default function addIncludeHook(database) {
 
           const target =
             model.columns[association.target].as || association.target
+
           const fk = association.fk
 
           const fetchedIds = results.map((row) => {
@@ -79,7 +80,7 @@ export default function addIncludeHook(database) {
 
           const foreign = await association.model
             .findAll()
-            .whereIn(`${association.model.table}.${target}`, fetchedIds)
+            .whereIn(`${association.model.table}.${fk}`, fetchedIds)
 
           for (const index in params.result) {
             params.result[index][

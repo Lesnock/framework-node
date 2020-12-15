@@ -71,6 +71,7 @@ class ResourceController extends Controller {
 
       return res.send()
     } catch (error) {
+      console.log(error)
       if (ValidationError.isError(error)) {
         return res.status(400).json({ error: error.errors })
       }

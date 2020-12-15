@@ -2,6 +2,8 @@ import Withdrawal from '../models/Withdrawal'
 import WithdrawalItem from '../models/WithdrawalItem'
 import ResourceController from '../core/ResourceController'
 
+import { uuidv4 } from '../helpers'
+
 class WithdrawalController extends ResourceController {
   constructor() {
     super()
@@ -17,7 +19,8 @@ class WithdrawalController extends ResourceController {
         {
           model: WithdrawalItem,
           type: 'hasMany',
-          fk: 'withdrawal_id'
+          fk: 'withdrawal_uuid',
+          target: 'uuid'
         }
       ]
     })
@@ -27,7 +30,20 @@ class WithdrawalController extends ResourceController {
   // async get(req, res) {}
 
   // Hook - Should insert a register
-  // Hook - async insert(req, res) {}
+  async insert(req) {
+    // Add Withdrawal
+    const uuid = uuidv4()
+    await Withdrawal.insert({ ...req.body, uuid })
+
+    // Add items
+    const { items } = req.body
+
+    if (items) {
+      for (const item of items) {
+        await WithdrawalItem.insert({ ...item, withdrawal_uuid: uuid })
+      }
+    }
+  }
 
   // Hook - Should update a register
   // async update(req, res) {}
