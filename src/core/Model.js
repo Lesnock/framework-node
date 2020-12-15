@@ -144,6 +144,8 @@ class Model {
   static async getTotal(filters = {}) {
     let query = this.query()
 
+    query.model = this
+
     query.select(this.primaryKey)
 
     if (filters) {
@@ -164,8 +166,10 @@ class Model {
    */
   static async find(primaryKey, options = {}) {
     const query = this.query()
-      .select(this.mountAttributes())
-      .where(this.primaryKey, primaryKey)
+
+    query.model = this
+
+    query.select(this.mountAttributes()).where(this.primaryKey, primaryKey)
 
     query.select(this.mountAttributes())
 
@@ -183,6 +187,8 @@ class Model {
    */
   static async findBy(column, value) {
     const query = this.query().where(column, value)
+
+    query.model = this
 
     query.select(this.mountAttributes())
 

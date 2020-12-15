@@ -67,27 +67,39 @@ export default function addIncludeHook(database) {
 
       async function eagerLoad() {
         for (const association of includes.hasMany) {
-          const results = [...params.result]
+          const results = params.result
 
           const target =
             model.columns[association.target].as || association.target
 
           const fk = association.fk
 
-          const fetchedIds = results.map((row) => {
-            return row[target]
-          })
+          let fetchedIds = []
+
+          if (Array.isArray(results)) {
+            fetchedIds = results.map((row) => {
+              return row[target]
+            })
+          } else {
+            fetchedIds.push(results[target])
+          }
+
+          console.log('ids', fetchedIds)
 
           const foreign = await association.model
             .findAll()
             .whereIn(`${association.model.table}.${fk}`, fetchedIds)
 
-          for (const index in params.result) {
-            params.result[index][
-              association.as || association.model.table
-            ] = foreign.filter(
-              (row) => row[fk] === params.result[index][target]
-            )
+          if (Array.isArray(results)) {
+            for (const index in params.result) {
+              params.result[index][
+                association.as || association.model.table
+              ] = foreign.filter(
+                (row) => row[fk] === params.result[index][target]
+              )
+            }
+          } else {
+            params.result[association.as || association.model.table] = foreign
           }
         }
       }
