@@ -158,7 +158,9 @@ class Model {
    * @param {*} id
    */
   static async find(id) {
-    const query = this.query().select(this.mountAttributes()).where('id', id)
+    const query = this.query()
+      .select(this.mountAttributes())
+      .where(this.primaryKey || 'id', id)
 
     if (this.defaultAttributes) {
       query.select(
