@@ -8,19 +8,19 @@ class ProductController extends ResourceController {
     this.model = Product
   }
 
-  // Should return the list to be displayed
+  // Hook - Should return the list to be displayed
   // async list(req, res) {}
 
-  // Should return a unique register
+  // Hook - Should return a unique register
   // async get(req, res) {}
 
-  // Should insert a register
-  // async insert(req, res) {}
+  // Hook - Should insert a register
+  // Hook - async insert(req, res) {}
 
-  // Should update a register
+  // Hook - Should update a register
   // async update(req, res) {}
 
-  // Should delete a register
+  // Hook - Should delete a register
   // async destroy(req, res) {}
 }
 

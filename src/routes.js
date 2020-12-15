@@ -10,6 +10,7 @@ import UserController from './controllers/UserController'
 import LoginController from './controllers/LoginController'
 import ProductController from './controllers/ProductController'
 import DepartmentController from './controllers/DepartmentController'
+import WithdrawalController from './controllers/WithdrawalController'
 
 // Public routes
 export const Public = new Router()
@@ -20,21 +21,21 @@ export const Private = new Router()
 Private.use(auth)
 Private.use(filters)
 
-Private.get('/users', action(UserController, 'index'))
 Private.get('/users/me', action(UserController, 'me'))
-Private.post('/users', action(UserController, 'store'))
-Private.get('/users/:id', action(UserController, 'show'))
-Private.put('/users/:id', action(UserController, 'update'))
-Private.delete('/users/:id', action(UserController, 'delete'))
 
-Private.get('/departments', action(DepartmentController, 'index'))
-Private.post('/departments', action(DepartmentController, 'store'))
-Private.get('/departments/:id', action(DepartmentController, 'show'))
-Private.put('/departments/:id', action(DepartmentController, 'update'))
-Private.delete('/departments/:id', action(DepartmentController, 'delete'))
+const resources = {
+  '/users': UserController,
+  '/departments': DepartmentController,
+  '/products': ProductController,
+  '/withdrawals': WithdrawalController
+}
 
-Private.get('/products', action(ProductController, 'index'))
-Private.post('/products', action(ProductController, 'store'))
-Private.get('/products/:id', action(ProductController, 'show'))
-Private.put('/products/:id', action(ProductController, 'update'))
-Private.delete('/products/:id', action(ProductController, 'delete'))
+for (const route in resources) {
+  const Controller = resources[route]
+
+  Private.get(route, action(Controller, 'index'))
+  Private.post(route, action(Controller, 'store'))
+  Private.get(`${route}/:id`, action(Controller, 'show'))
+  Private.put(`${route}/:id`, action(Controller, 'update'))
+  Private.delete(`${route}/:id`, action(Controller, 'delete'))
+}
