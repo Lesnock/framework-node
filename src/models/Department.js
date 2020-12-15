@@ -1,3 +1,5 @@
+import { string, number } from '../modules/validations'
+
 import Model from '../core/Model'
 
 class Department extends Model {
@@ -5,15 +7,25 @@ class Department extends Model {
 
   static columns = {
     id: {
-      type: 'integer'
+      type: 'integer',
+      label: 'ID',
+      searchable: true,
+      orderable: true,
+      validations: {
+        default: number()
+      }
     },
+
     name: {
-      type: 'string'
+      type: 'string',
+      label: 'Nome',
+      searchable: true,
+      orderable: true,
+      validations: {
+        default: string().nullable().required().unique(this, 'name')
+      }
     }
   }
-
-  static searchable = ['id', 'name']
-  static orderable = ['id', 'name']
 }
 
 export default Department
