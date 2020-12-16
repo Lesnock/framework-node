@@ -71,7 +71,6 @@ class ResourceController extends Controller {
 
       return res.send()
     } catch (error) {
-      console.log(error)
       if (ValidationError.isError(error)) {
         return res.status(400).json({ error: error.errors })
       }
@@ -104,7 +103,7 @@ class ResourceController extends Controller {
     try {
       await this.change(req, res)
 
-      const result = await this.model.find(id)
+      const result = await this.get(req, res)
 
       return res.json(result)
     } catch (error) {

@@ -22,7 +22,7 @@ class WithdrawalItem extends Model {
       searchable: true,
       orderable: true,
       validations: {
-        default: string()
+        default: string().required()
       }
     },
 

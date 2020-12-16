@@ -63,3 +63,24 @@ export function resolveDotNotation(dotNotationObj = {}) {
 export function uuidv4() {
   return v4()
 }
+
+/**
+ * Sort array by column
+ * @param {*} array
+ * @param {*} column
+ */
+export function sortArrayBy(array, column, order = 'asc') {
+  const ordering = order === 'asc' ? 1 : -1
+
+  return array.sort((a, b) => {
+    if (a[column] < b[column]) {
+      return -1 * ordering
+    }
+
+    if (a[column] > b[column]) {
+      return 1 * ordering
+    }
+
+    return 0
+  })
+}

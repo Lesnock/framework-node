@@ -2,7 +2,7 @@ import Withdrawal from '../models/Withdrawal'
 import WithdrawalItem from '../models/WithdrawalItem'
 import ResourceController from '../core/ResourceController'
 
-import { uuidv4 } from '../helpers'
+import { uuidv4, sortArrayBy } from '../helpers'
 
 class WithdrawalController extends ResourceController {
   constructor() {
@@ -11,15 +11,24 @@ class WithdrawalController extends ResourceController {
     this.model = Withdrawal
   }
 
-  // Hook - Should return the list to be displayed (used in index method)
+  /**
+   * Hook - Should return the list to be displayed (used in index method)
+   */
   async list(req) {
-    return await Withdrawal.findAllWithCountAndTotal({
+    const results = await Withdrawal.findAllWithCountAndTotal({
       filters: req.filters,
       include: [WithdrawalItem]
     })
+
+    // Sort by ID
+    results.rows = sortArrayBy(results.rows, 'id', 'desc')
+
+    return results
   }
 
-  // Hook - Should return a unique register (used in show method)
+  /**
+   * Hook - Should return a unique register (used in show method)
+   */
   async get(req) {
     const { id } = req.params
 
@@ -28,7 +37,9 @@ class WithdrawalController extends ResourceController {
     })
   }
 
-  // Hook - Should insert a register (used in store method)
+  /**
+   * Hook - Should insert a register (used in store method)
+   */
   async insert(req) {
     // Add Withdrawal
     const uuid = uuidv4()
@@ -40,20 +51,48 @@ class WithdrawalController extends ResourceController {
 
     if (items) {
       for (const item of items) {
-        const validated = await WithdrawalItem.validate(item)
-        await WithdrawalItem.insert({ ...validated, withdrawal_uuid: uuid })
+        const validated = await WithdrawalItem.validate({
+          ...item,
+          withdrawal_uuid: uuid
+        })
+
+        await WithdrawalItem.insert(validated)
       }
     }
   }
 
-  // Hook - Should update a register (used in update method)
+  /**
+   * Hook - Should update a register (used in update method)
+   */
   async change(req) {
     const { id } = req.params
 
-    const withdrawal = await Withdrawal.find(id)
+    const withdrawal = await Withdrawal.find(id, {
+      include: [WithdrawalItem]
+    })
 
-    // if ()
+    // Delete all items
+    if (withdrawal.items.length) {
+      const ids = withdrawal.items.map(({ id }) => id)
+      await WithdrawalItem.query().whereIn('id', ids).delete()
+    }
 
+    const { items } = req.body
+
+    // Add items again
+    for (const item in items) {
+      const validated = await WithdrawalItem.validate(
+        {
+          ...item,
+          withdrawal_uuid: withdrawal.uuid
+        },
+        'insert'
+      )
+
+      await WithdrawalItem.insert(validated)
+    }
+
+    // Update withdrawal
     this.model.ignoreId = id
 
     const validated = await this.model.validate(req.body, 'update')
