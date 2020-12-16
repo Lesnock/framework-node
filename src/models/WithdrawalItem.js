@@ -41,6 +41,7 @@ class WithdrawalItem extends Model {
       label: 'Criado em',
       searchable: false,
       orderable: true,
+      hidden: true,
       validations: {
         default: date()
       }
@@ -51,6 +52,7 @@ class WithdrawalItem extends Model {
       label: 'Atualizado em',
       orderable: true,
       searchable: false,
+      hidden: true,
       validations: {
         default: date()
       }

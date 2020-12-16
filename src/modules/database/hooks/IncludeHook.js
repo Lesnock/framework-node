@@ -52,7 +52,7 @@ export default function addIncludeHook(database) {
     }
   })
 
-  // hasMany hook (Eager loading)
+  // ============== hasMany hook (Eager loading) =================== //
   database.addHook(
     'after',
     'select',
@@ -83,8 +83,6 @@ export default function addIncludeHook(database) {
           } else {
             fetchedIds.push(results[target])
           }
-
-          console.log('ids', fetchedIds)
 
           const foreign = await association.model
             .findAll()

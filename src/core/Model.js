@@ -59,6 +59,11 @@ class Model {
   static primaryKey = 'id'
 
   /**
+   * Associations
+   */
+  static associations = {}
+
+  /**
    * Get knex instance with table
    */
   static query() {
@@ -127,13 +132,23 @@ class Model {
       hasMany: []
     }
 
-    include.forEach(({ model, type, fk, target = this.primaryKey, as }) => {
-      if (!model || !type || !fk) {
-        throw new Error('All includes should have at least: model, type and fk')
+    include.forEach((includeModel) => {
+      const association = this.associations[includeModel.table]
+
+      if (!association) {
+        throw new Error(
+          `Association ${includeModel.table} does not exists in ${this.name} model`
+        )
+      }
+
+      const { type, fk, target, as } = association
+
+      if (!type || !fk) {
+        throw new Error('All includes should have at least: type and fk')
       }
 
       // All this includes will be resolved in the Knex Hooks (modules/database)
-      query.includes[type].push({ model, fk, target, as })
+      query.includes[type].push({ model: includeModel, fk, target, as })
     })
   }
 

@@ -11,38 +11,24 @@ class WithdrawalController extends ResourceController {
     this.model = Withdrawal
   }
 
-  // Hook - Should return the list to be displayed
+  // Hook - Should return the list to be displayed (used in index method)
   async list(req) {
     return await Withdrawal.findAllWithCountAndTotal({
       filters: req.filters,
-      include: [
-        {
-          model: WithdrawalItem,
-          type: 'hasMany',
-          fk: 'withdrawal_uuid',
-          target: 'uuid'
-        }
-      ]
+      include: [WithdrawalItem]
     })
   }
 
-  // Hook - Should return a unique register
+  // Hook - Should return a unique register (used in show method)
   async get(req) {
     const { id } = req.params
 
     return await Withdrawal.find(id, {
-      include: [
-        {
-          model: WithdrawalItem,
-          type: 'hasMany',
-          fk: 'withdrawal_uuid',
-          target: 'uuid'
-        }
-      ]
+      include: [WithdrawalItem]
     })
   }
 
-  // Hook - Should insert a register
+  // Hook - Should insert a register (used in store method)
   async insert(req) {
     // Add Withdrawal
     const uuid = uuidv4()
@@ -53,15 +39,23 @@ class WithdrawalController extends ResourceController {
 
     if (items) {
       for (const item of items) {
-        await WithdrawalItem.insert({ ...item, withdrawal_uuid: uuid })
+        const validated = WithdrawalItem.validate(item)
+        await WithdrawalItem.insert({ ...validated, withdrawal_uuid: uuid })
       }
     }
   }
 
-  // Hook - Should update a register
-  // async update(req, res) {}
+  // Hook - Should update a register (used in update method)
+  async change(req) {
+    const { id } = req.params
 
-  // Hook - Should delete a register
+    this.model.ignoreId = id
+
+    const validated = await this.model.validate(req.body, 'update')
+    await this.model.update(id, validated)
+  }
+
+  // Hook - Should delete a register (used in delete method)
   // async destroy(req, res) {}
 }
 

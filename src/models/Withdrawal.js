@@ -67,6 +67,15 @@ class Withdrawal extends Model {
       }
     }
   }
+
+  static associations = {
+    withdrawal_items: {
+      type: 'hasMany',
+      fk: 'withdrawal_uuid',
+      target: 'uuid',
+      as: 'items'
+    }
+  }
 }
 
 export default Withdrawal
