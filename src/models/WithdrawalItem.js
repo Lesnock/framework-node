@@ -36,6 +36,16 @@ class WithdrawalItem extends Model {
       }
     },
 
+    quantity: {
+      type: 'integer',
+      label: 'Quantidade',
+      searchable: true,
+      orderable: true,
+      validations: {
+        default: number().default(1).required()
+      }
+    },
+
     created_at: {
       type: 'date',
       label: 'Criado em',
@@ -56,6 +66,15 @@ class WithdrawalItem extends Model {
       validations: {
         default: date()
       }
+    }
+  }
+
+  static associations = {
+    products: {
+      type: 'belongsTo',
+      fk: 'product_id',
+      target: 'id',
+      as: 'product'
     }
   }
 }

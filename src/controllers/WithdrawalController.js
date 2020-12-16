@@ -2,6 +2,7 @@ import Withdrawal from '../models/Withdrawal'
 import WithdrawalItem from '../models/WithdrawalItem'
 import ResourceController from '../core/ResourceController'
 
+import Product from '../models/Product'
 import { uuidv4, sortArrayBy } from '../helpers'
 
 class WithdrawalController extends ResourceController {
@@ -17,7 +18,17 @@ class WithdrawalController extends ResourceController {
   async list(req) {
     const results = await Withdrawal.findAllWithCountAndTotal({
       filters: req.filters,
-      include: [WithdrawalItem]
+      include: [
+        {
+          model: WithdrawalItem,
+          include: [
+            {
+              model: Product,
+              attributes: ['id', 'name']
+            }
+          ]
+        }
+      ]
     })
 
     // Sort by ID
@@ -33,7 +44,18 @@ class WithdrawalController extends ResourceController {
     const { id } = req.params
 
     return await Withdrawal.find(id, {
-      include: [WithdrawalItem]
+      attributes: ['id', 'obs', 'uuid'],
+      include: [
+        {
+          model: WithdrawalItem,
+          include: [
+            {
+              model: Product,
+              attributes: ['id', 'name']
+            }
+          ]
+        }
+      ]
     })
   }
 
@@ -99,8 +121,24 @@ class WithdrawalController extends ResourceController {
     await this.model.update(id, validated)
   }
 
-  // Hook - Should delete a register (used in delete method)
-  // async destroy(req, res) {}
+  /**
+   * Hook - Should delete a register (used in delete method)
+   */
+  async destroy(req) {
+    const { id } = req.params
+
+    const withdrawal = await Withdrawal.find(id, {
+      include: [WithdrawalItem]
+    })
+
+    // Delete all items
+    if (withdrawal.items.length) {
+      const ids = withdrawal.items.map(({ id }) => id)
+      await WithdrawalItem.query().whereIn('id', ids).delete()
+    }
+
+    await Withdrawal.delete(id)
+  }
 }
 
 export default new WithdrawalController()

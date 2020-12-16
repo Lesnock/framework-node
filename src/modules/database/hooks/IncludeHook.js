@@ -8,7 +8,7 @@
  * @param database
  */
 export default function addIncludeHook(database) {
-  // belongsTo and hasOne Hook
+  // ============== belongsTo and hasOne Hook =================
   database.addHook('before', 'select', '*', (when, method, table, params) => {
     const model = params.query.model
     const includes = params.query.includes
@@ -20,15 +20,17 @@ export default function addIncludeHook(database) {
     includes.belongsTo.forEach((association) =>
       selectAndJoin(association, 'belongsTo')
     )
+
     includes.hasOne.forEach((association) =>
       selectAndJoin(association, 'hasOne')
     )
 
     function selectAndJoin(association, type) {
-      const columns = association.model.columns
+      const columns =
+        association.attributes || Object.keys(association.model.columns)
 
-      for (const columnName in columns) {
-        const column = columns[columnName]
+      for (const columnName of columns) {
+        const column = association.model.columns[columnName]
 
         if (!column.hidden) {
           const as = `${association.as || association.table}.${
@@ -85,7 +87,10 @@ export default function addIncludeHook(database) {
           }
 
           const foreign = await association.model
-            .findAll()
+            .findAll({
+              include: association.include,
+              attributes: association.attributes
+            })
             .whereIn(`${association.model.table}.${fk}`, fetchedIds)
 
           if (Array.isArray(results)) {

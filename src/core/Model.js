@@ -64,16 +64,22 @@ class Model {
   static associations = {}
 
   /**
+   * Automatic includes
+   */
+  static autoIncludes = []
+
+  /**
    * Get knex instance with table
    */
   static query() {
     return database(this.table)
   }
 
-  static mountAttributes() {
+  static mountAttributes(options) {
     let attributes = []
+    let columns = options.attributes || Object.keys(this.columns)
 
-    for (const columnName in this.columns) {
+    for (const columnName of columns) {
       const column = this.columns[columnName]
 
       if (column.hidden === true) {
@@ -132,12 +138,26 @@ class Model {
       hasMany: []
     }
 
-    include.forEach((includeModel) => {
-      const association = this.associations[includeModel.table]
+    include.forEach((include) => {
+      let model = null
+      let includeChain = undefined
+      let includeAttributes = undefined
+
+      const includeIsObject = typeof include === 'object'
+
+      if (includeIsObject) {
+        model = include.model
+        includeChain = include.include
+        includeAttributes = include.attributes
+      } else {
+        model = include
+      }
+
+      const association = this.associations[model.table]
 
       if (!association) {
         throw new Error(
-          `Association ${includeModel.table} does not exists in ${this.name} model`
+          `Association ${include.table} does not exists in ${this.name} model`
         )
       }
 
@@ -148,7 +168,14 @@ class Model {
       }
 
       // All this includes will be resolved in the Knex Hooks (modules/database)
-      query.includes[type].push({ model: includeModel, fk, target, as })
+      query.includes[type].push({
+        model,
+        fk,
+        target: target || 'id',
+        as,
+        include: includeChain,
+        attributes: includeAttributes
+      })
     })
   }
 
@@ -184,9 +211,9 @@ class Model {
 
     query.model = this
 
-    query.select(this.mountAttributes()).where(this.primaryKey, primaryKey)
+    query.select(this.mountAttributes(options))
 
-    query.select(this.mountAttributes())
+    query.where(this.primaryKey, primaryKey)
 
     if (options.include) {
       this.addIncludeToQuery(query, options.include)
