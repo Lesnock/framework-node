@@ -32,14 +32,15 @@ class WithdrawalController extends ResourceController {
   async insert(req) {
     // Add Withdrawal
     const uuid = uuidv4()
-    await Withdrawal.insert({ ...req.body, uuid })
+    const validated = await Withdrawal.validate({ ...req.body, uuid }, 'insert')
+    await Withdrawal.insert(validated)
 
     // Add items
     const { items } = req.body
 
     if (items) {
       for (const item of items) {
-        const validated = WithdrawalItem.validate(item)
+        const validated = await WithdrawalItem.validate(item)
         await WithdrawalItem.insert({ ...validated, withdrawal_uuid: uuid })
       }
     }
@@ -48,6 +49,10 @@ class WithdrawalController extends ResourceController {
   // Hook - Should update a register (used in update method)
   async change(req) {
     const { id } = req.params
+
+    const withdrawal = await Withdrawal.find(id)
+
+    // if ()
 
     this.model.ignoreId = id
 

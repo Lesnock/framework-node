@@ -272,7 +272,7 @@ class Model {
     return this
   }
 
-  static async validate(data, validationName = 'all', options = {}) {
+  static async validate(data, validationName = 'default', options = {}) {
     const validations = {}
 
     const columns = Object.keys(this.columns)
