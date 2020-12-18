@@ -7,7 +7,7 @@ class Withdrawal extends Model {
 
   static columns = {
     id: {
-      type: 'string',
+      type: 'integer',
       label: 'ID',
       searchable: true,
       orderable: true,

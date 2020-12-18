@@ -23,6 +23,38 @@ import { ValidationError } from 'yup'
  * the crud actions
  */
 class ResourceController extends Controller {
+  // async test() {
+  //   const withdrawals = [
+  //     {
+  //       id: 1,
+  //       items: [
+  //         {
+  //           id: 4,
+  //           products: [
+  //             {
+  //               id: 2,
+  //               name: 'borracha'
+  //             }
+  //           ]
+  //         }
+  //       ]
+  //     }
+  //   ]
+
+  //   const field = 'items[].products[].name'
+
+  //   // When divide
+  //   const keys = ['items[]', 'products[]', 'name']
+
+  //   function filter(withdrawals, keys, search) {
+  //     keys.forEach(key => {
+  //       if (key.search('[]')) {
+  //         const keyName = key.replace('[]', '')
+  //       }
+  //     })
+  //   }
+  // }
+
   // Should return the list to be displayed
   async list(req) {
     const { filters } = req

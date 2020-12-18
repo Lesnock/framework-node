@@ -21,6 +21,8 @@ export const Private = new Router()
 Private.use(auth)
 Private.use(filters)
 
+Private.get('/', (req, res) => res.send('ok'))
+
 Private.get('/users/me', action(UserController, 'me'))
 
 const resources = {
