@@ -4,7 +4,7 @@ export default function auth(req, res, next) {
   const { authorization } = req.headers
 
   if (!authorization) {
-    return res.status(498).json({ error: 'Token não fornecido' })
+    return res.status(401).json({ error: 'Token não fornecido' })
   }
 
   const [, token] = authorization.split(' ')
@@ -12,7 +12,7 @@ export default function auth(req, res, next) {
   const auth = new Auth()
 
   if (!auth.tokenIsValid(token)) {
-    return res.status(498).json({ error: 'Token inválido' })
+    return res.status(401).json({ error: 'Token inválido' })
   }
 
   req.userId = auth.tokenData.id
