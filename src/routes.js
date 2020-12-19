@@ -20,6 +20,7 @@ export const Private = new Router()
 Private.use(auth)
 Private.use(filters)
 
+Private.get('/', (req, res) => res.send('ok'))
 Private.get('/users', action(UserController, 'index'))
 Private.get('/users/me', action(UserController, 'me'))
 Private.post('/users', action(UserController, 'store'))

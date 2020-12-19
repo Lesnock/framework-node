@@ -4,10 +4,14 @@ import database from '../modules/database'
 import Controller from '../core/Controller'
 
 class LoginController extends Controller {
-  async login(req, res) {
-    const { username, password } = req.body
+  key = 'email'
 
-    const user = await database('users').where('username', username).first()
+  async login(req, res) {
+    const { password } = req.body
+
+    const key = req.body[this.key]
+
+    const user = await database('users').where(this.key, key).first()
 
     if (!user.id) {
       return res.status(401).json({ error: 'Dados incorretos' })
@@ -25,6 +29,7 @@ class LoginController extends Controller {
     res.json({
       user: {
         name: user.name,
+        email: user.email,
         username: user.username
       },
       token
