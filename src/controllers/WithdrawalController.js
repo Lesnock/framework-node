@@ -3,7 +3,7 @@ import WithdrawalItem from '../models/WithdrawalItem'
 import ResourceController from '../core/ResourceController'
 
 import Product from '../models/Product'
-import { uuidv4, sortArrayBy } from '../helpers'
+import { uuidv4, sortArrayBy, filterNestedArray } from '../helpers'
 
 class WithdrawalController extends ResourceController {
   constructor() {
@@ -77,6 +77,7 @@ class WithdrawalController extends ResourceController {
           {
             year: 2020,
             plus: [
+              'test',
               {
                 phrase: 'I love God'
               }
@@ -89,68 +90,7 @@ class WithdrawalController extends ResourceController {
     const path = 'happy[].plus[].phrase'
     const search = 'God'
 
-    const findedRows = filterObjectArray(rows, path, search)
-
-    function filterObjectArray(rows, path, search) {
-      return rows.filter((row) => findInNested(row, path, search))
-    }
-
-    function findInNested(row, path, search) {
-      if (row === undefined || row === null) {
-        return false
-      }
-
-      const pathArray = path.split('.') // ['items[]', 'product', 'name']
-
-      let hasFind = false
-
-      // console.log(row, pathArray, pathArray[0])
-
-      // Array
-      if (Array.isArray(row)) {
-        let arrayHas = false
-
-        row.forEach((item) => {
-          if (findInNested(item, path, search)) {
-            arrayHas = true
-          }
-        })
-
-        hasFind = arrayHas
-      }
-
-      // Object
-      else if (typeof row === 'object') {
-        const nextPaths =
-          pathArray.length > 1 ? pathArray.slice(1).join('.') : ''
-
-        // Final object
-        hasFind = findInNested(
-          row[pathArray[0].replace('[]', '')],
-          nextPaths,
-          search
-        )
-      }
-
-      // Value
-      else {
-        console.log(row, pathArray)
-        // Path should not finish yet
-        if (pathArray[0]) {
-          hasFind = false
-        } else {
-          const lowerCaseSearch = String(search).toLowerCase()
-
-          const find = String(row).toLowerCase().search(lowerCaseSearch)
-
-          if (find >= 0) {
-            hasFind = true
-          }
-        }
-      }
-
-      return hasFind
-    }
+    const findedRows = filterNestedArray(rows, path, search, { exact: true })
 
     res.send(findedRows)
   }

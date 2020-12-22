@@ -84,3 +84,74 @@ export function sortArrayBy(array, column, order = 'asc') {
     return 0
   })
 }
+
+export function filterNestedArray(array, path = '', search, options) {
+  return array.filter((row) => findInNested(row, path, search, options))
+}
+
+export function findInNested(row, path, search, options = {}) {
+  console.log('options', options)
+  if (row === undefined || row === null) {
+    return false
+  }
+
+  const pathArray = path.split('.') // ['items[]', 'product', 'name']
+
+  let hasFind = false
+
+  // Array
+  if (Array.isArray(row)) {
+    let arrayHas = false
+
+    row.forEach((item) => {
+      if (findInNested(item, path, search)) {
+        arrayHas = true
+      }
+    })
+
+    hasFind = arrayHas
+  }
+
+  // Object
+  else if (typeof row === 'object') {
+    const nextPaths = pathArray.length > 1 ? pathArray.slice(1).join('.') : ''
+
+    // Final object
+    hasFind = findInNested(
+      row[pathArray[0].replace('[]', '')],
+      nextPaths,
+      search
+    )
+  }
+
+  // Value
+  else {
+    const insensitive = options.insensitive || true
+    const exact = options.exact || false
+
+    // Path should not finish yet
+    if (pathArray[0]) {
+      hasFind = false
+    } else {
+      let searchTerm = insensitive
+        ? String(search).toLowerCase()
+        : String(search)
+
+      let value = insensitive ? String(row).toLowerCase() : String(row)
+
+      console.log(exact)
+
+      if (exact) {
+        hasFind = value === searchTerm
+      } else {
+        const find = value.search(searchTerm)
+
+        if (find >= 0) {
+          hasFind = true
+        }
+      }
+    }
+  }
+
+  return hasFind
+}
