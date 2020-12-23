@@ -85,12 +85,49 @@ export function sortArrayBy(array, column, order = 'asc') {
   })
 }
 
-export function filterNestedArray(array, path = '', search, options) {
-  return array.filter((row) => findInNested(row, path, search, options))
+/**
+ * Filter nested array with path and search
+ *
+ * Example, if you want to filter an array where: departments.name equals to 'TI'
+ *
+ * Just call it: filterNestedArray(array, 'departments.name', 'TI')
+ *
+ * For inner arrays use the '[]' syntax:
+ *
+ * filterNestedArray(array, 'user.phones[].number', 101)
+ * @param {*} array
+ * @param {*} path
+ * @param {*} search
+ * @param {*} options exact and insensitve
+ *
+ * @returns The filtered array with just the items that corresponds to the search
+ */
+export function filterNestedArray(
+  array,
+  path = '',
+  search,
+  { exact = false, insensitive = true } = {}
+) {
+  return array.filter((row) =>
+    checkInNested(row, path, search, { exact, insensitive })
+  )
 }
 
-export function findInNested(row, path, search, options = {}) {
-  console.log('options', options)
+/**
+ * Check if data has the search in the specific path
+ * @param {Array | Object | Value} row
+ * @param {*} path
+ * @param {*} search
+ * @param {*} options
+ *
+ * @returns {Boolean}
+ */
+export function checkInNested(
+  row,
+  path,
+  search,
+  { exact = false, insensitive = true }
+) {
   if (row === undefined || row === null) {
     return false
   }
@@ -104,7 +141,7 @@ export function findInNested(row, path, search, options = {}) {
     let arrayHas = false
 
     row.forEach((item) => {
-      if (findInNested(item, path, search)) {
+      if (checkInNested(item, path, search, { exact, insensitive })) {
         arrayHas = true
       }
     })
@@ -117,18 +154,16 @@ export function findInNested(row, path, search, options = {}) {
     const nextPaths = pathArray.length > 1 ? pathArray.slice(1).join('.') : ''
 
     // Final object
-    hasFind = findInNested(
+    hasFind = checkInNested(
       row[pathArray[0].replace('[]', '')],
       nextPaths,
-      search
+      search,
+      { exact, insensitive }
     )
   }
 
   // Value
   else {
-    const insensitive = options.insensitive || true
-    const exact = options.exact || false
-
     // Path should not finish yet
     if (pathArray[0]) {
       hasFind = false
@@ -138,8 +173,6 @@ export function findInNested(row, path, search, options = {}) {
         : String(search)
 
       let value = insensitive ? String(row).toLowerCase() : String(row)
-
-      console.log(exact)
 
       if (exact) {
         hasFind = value === searchTerm

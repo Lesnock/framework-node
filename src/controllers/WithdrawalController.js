@@ -87,10 +87,10 @@ class WithdrawalController extends ResourceController {
       }
     ]
 
-    const path = 'happy[].plus[].phrase'
-    const search = 'God'
+    const path = 'department.name'
+    const search = 'Compras'
 
-    const findedRows = filterNestedArray(rows, path, search, { exact: true })
+    const findedRows = filterNestedArray(rows, path, search)
 
     res.send(findedRows)
   }
