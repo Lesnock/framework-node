@@ -27,6 +27,10 @@ export function setFilters(query, filters, model) {
 
   // ======== Search =========
   if (filters.search) {
+    if (model.virtuals.length) {
+      query.searchAfter = filters.search
+    }
+
     // Create grouped "or where"
     query = query.where(function () {
       // Search for each column
@@ -39,6 +43,7 @@ export function setFilters(query, filters, model) {
 
         const columnType = model.columns[column].type
 
+        // Integer
         if (columnType === 'integer') {
           if (!Number.isInteger(Number(search)) && Number(search) % 1 !== 0) {
             return
@@ -47,16 +52,15 @@ export function setFilters(query, filters, model) {
           return this.orWhere(`${model.table}.${column}`, Number(search))
         }
 
+        // Float
         if (columnType === 'float') {
           search = Number(filters.search) || 0
           return this.orWhere(`${model.table}.${column}`, search)
         }
 
         // Date
-        if (['date'].includes(columnType)) {
+        if (columnType === 'date') {
           const date = new Date(search)
-
-          // parse(search, 'yyyy-MM-dd', new Date())
 
           if (isValid(date)) {
             return this.orWhereBetween(`${model.table}.${column}`, [
@@ -115,7 +119,7 @@ export function setFilters(query, filters, model) {
         }
 
         // Date
-        if (['date'].includes(columnType)) {
+        if (columnType === 'date') {
           const date = new Date(search)
 
           parse(search, 'yyyy-MM-dd', new Date())

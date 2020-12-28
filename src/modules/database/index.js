@@ -6,6 +6,7 @@ import knexFile from '../../../knexfile'
 import IncludeHook from './hooks/IncludeHook'
 import TimezonesHook from './hooks/TimezonesHook'
 import DotNotationHook from './hooks/DotNotationHook'
+import searchAfterHook from './hooks/searchAfterHook'
 
 /**
  * Get the database instance
@@ -32,6 +33,7 @@ function addHooks(database) {
   IncludeHook(database)
   TimezonesHook(database)
   DotNotationHook(database)
+  searchAfterHook(database)
 }
 
 export default getDatabase()

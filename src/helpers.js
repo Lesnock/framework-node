@@ -15,7 +15,8 @@ export function resolveDotNotation(dotNotationObj = {}) {
    * user = {
    *  id: 1,
    *  name: 'Caio',
-   *  department.one.name: 'TI'
+   *  department.one.name: 'TI',
+   *  phones[].number: 200
    * }
    *
    * Result:
@@ -26,7 +27,10 @@ export function resolveDotNotation(dotNotationObj = {}) {
    *    one: {
    *      name: 'TI',
    *    }
-   *  }
+   *  },
+   *   phones: [
+   *    { number: 200 }
+   *   ]
    * }
    */
 
@@ -108,9 +112,26 @@ export function filterNestedArray(
   search,
   { exact = false, insensitive = true } = {}
 ) {
+  if (!array.length) {
+    return array
+  }
+
   return array.filter((row) =>
     checkInNested(row, path, search, { exact, insensitive })
   )
+}
+
+export function findNestedArray(
+  array,
+  path,
+  search,
+  { exact = false, insensitive = true }
+) {
+  if (!array.length) {
+    return array
+  }
+
+  return array.find()
 }
 
 /**

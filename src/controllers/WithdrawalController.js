@@ -115,7 +115,7 @@ class WithdrawalController extends ResourceController {
     })
 
     // Sort by ID
-    results.rows = sortArrayBy(results.rows, 'id', 'desc')
+    // results.rows = sortArrayBy(results.rows, 'id', 'desc')
 
     return results
   }

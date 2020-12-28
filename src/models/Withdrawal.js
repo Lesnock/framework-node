@@ -5,6 +5,10 @@ import Model from '../core/Model'
 class Withdrawal extends Model {
   static table = 'withdrawals'
 
+  static config = {
+    searchType: 'javascript' // or database
+  }
+
   static columns = {
     id: {
       type: 'integer',
@@ -67,6 +71,8 @@ class Withdrawal extends Model {
       }
     }
   }
+
+  // static virtuals = ['items[].products.name']
 
   static associations = {
     withdrawal_items: {

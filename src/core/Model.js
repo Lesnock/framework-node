@@ -69,6 +69,13 @@ class Model {
   static autoIncludes = []
 
   /**
+   * Virtual fields
+   *
+   * Used to search on objects after query is already finished
+   */
+  static virtuals = []
+
+  /**
    * Get knex instance with table
    */
   static query() {
