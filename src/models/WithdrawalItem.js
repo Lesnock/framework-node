@@ -71,7 +71,7 @@ class WithdrawalItem extends Model {
 
   static associations = {
     products: {
-      type: 'belongsTo',
+      type: 'hasOne',
       fk: 'product_id',
       target: 'id',
       as: 'product'

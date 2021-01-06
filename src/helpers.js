@@ -16,7 +16,8 @@ export function resolveDotNotation(dotNotationObj = {}) {
    *  id: 1,
    *  name: 'Caio',
    *  department.one.name: 'TI',
-   *  phones[].number: 200
+   *  phones[].number: 200,
+   *  phones[].number: 201
    * }
    *
    * Result:
@@ -28,34 +29,76 @@ export function resolveDotNotation(dotNotationObj = {}) {
    *      name: 'TI',
    *    }
    *  },
-   *   phones: [
-   *    { number: 200 }
-   *   ]
+   *  phones: [
+   *    { number: 200 },
+   *    { number: 201 },
+   *  ]
    * }
    */
+
+  // If it is just a value
+  if (typeof dotNotationObj !== 'object' && !Array.isArray(dotNotationObj)) {
+    return dotNotationObj
+  }
 
   const resolved = {}
 
   for (const prop in dotNotationObj) {
     const value = dotNotationObj[prop] // 'TI'
 
+    if (typeof value === 'object' || Array.isArray(value)) {
+      resolved[prop] = resolveDotNotation(value)
+    }
+
     // If prop has not point, just continue
-    if (prop.indexOf('.') < 0) {
+    if (prop.indexOf('.') < 0 && prop.indexOf('[]') < 0) {
       resolved[prop] = value
       continue
     }
 
     const array = prop.split('.') // ['department', 'one', 'name']
-    const first = array.shift() // ['department']
+
+    let first = array.shift() // ['department']
+
+    // const isArray = first.indexOf('[]') > 0
+
+    const isArray = !!first.match(/(\[.*\])/)
+
     const rest = array.join('.') // one.name
 
-    if (!resolved[first]) {
-      resolved[first] = {}
+    if (isArray) {
+      first = first.replace('[]', '')
     }
 
-    resolved[first][rest] = value // { department: { 'one.name': 'TI' } }
+    if (!resolved[first]) {
+      resolved[first] = isArray ? [] : {}
+    }
 
-    resolved[first] = resolveDotNotation(resolved[first])
+    if (isArray) {
+      if (!rest) {
+        resolved[first].push(resolveDotNotation(value))
+        continue
+      } else {
+        if (!resolved[first][0]) {
+          resolved[first][0] = {}
+        }
+
+        // resolved[first].push(resolveDotNotation({ [rest]: value }))
+        resolved[first][0][rest] = resolveDotNotation(value)
+      }
+    }
+
+    if (Array.isArray(resolved[first])) {
+      // resolved[first].push(resolveDotNotation({ [rest]: value }))
+      // resolved[first] = { [rest]: value } // phones: [ {} ]
+
+      resolved[first].forEach((item, index) => {
+        resolved[first][index] = resolveDotNotation(item)
+      })
+    } else {
+      resolved[first][rest] = value // { department: { 'one.name': 'TI' } }
+      resolved[first] = resolveDotNotation(resolved[first])
+    }
   }
 
   return resolved

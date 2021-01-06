@@ -1,4 +1,5 @@
 import { isValid, parse, format } from 'date-fns'
+import database from '../database'
 
 /**
  * Filters
@@ -14,7 +15,116 @@ import { isValid, parse, format } from 'date-fns'
  */
 
 export function setFilters(query, filters, model) {
-  const columnNames = Object.keys(model.columns)
+  function createSearchWhere(model, includes) {
+    const query = this
+
+    const columnNames = Object.keys(model.columns)
+    // Search for each column
+    columnNames.forEach((column) => createColumnWhere(query, model, column))
+
+    if (includes) {
+      function addIncludeWhere(model, include) {
+        const association = model.associations[include.model.table]
+
+        console.log(association, model)
+
+        const fieldHere =
+          association.type === 'hasOne' ? association.fk : association.target
+
+        const fieldThere =
+          association.type === 'hasOne' ? association.target : association.fk
+
+        // Verify each field of include if it has the search term
+        this.orWhereExists(function () {
+          // "this" is the subquery
+          this.select(include.model.primaryKey || 'id')
+
+          this.from(include.model.table)
+
+          console.log(association.type, model.table, fieldHere, fieldThere)
+
+          // Get just the register that it is beign joined
+          this.where(
+            `${model.table}.${fieldHere}`,
+            database.raw(`${include.model.table}.${fieldThere}`)
+          )
+
+          // Add where for each column
+          this.andWhere(function () {
+            const columnNames = Object.keys(include.model.columns)
+
+            // Search for each included columns
+            columnNames.forEach((column) => {
+              createColumnWhere(this, include.model, column)
+            })
+          })
+
+          if (include.include) {
+            include.include.forEach((inc) =>
+              addIncludeWhere.call(this, include.model, inc)
+            )
+          }
+        })
+      }
+
+      includes.forEach((include) => addIncludeWhere.call(query, model, include))
+    }
+  }
+
+  /**
+   * Create Where of Specific column
+   * @param {*} query
+   * @param {*} model
+   * @param {*} column
+   */
+  function createColumnWhere(query, model, column) {
+    if (!model.columns[column].searchable) {
+      return
+    }
+
+    let search = filters.search
+
+    const columnType = model.columns[column].type
+
+    // Integer
+    if (columnType === 'integer') {
+      if (!Number.isInteger(Number(search)) && Number(search) % 1 !== 0) {
+        return
+      }
+
+      return query.orWhere(`${model.table}.${column}`, Number(search))
+    }
+
+    // Float
+    if (columnType === 'float') {
+      search = Number(filters.search) || 0
+      return query.orWhere(`${model.table}.${column}`, search)
+    }
+
+    // Date
+    if (columnType === 'date') {
+      const date = new Date(search)
+
+      if (isValid(date)) {
+        return query.orWhereBetween(`${model.table}.${column}`, [
+          parse(
+            `${format(date, 'yyyy-MM-dd')} 00:00`,
+            'yyyy-MM-dd HH:mm',
+            new Date()
+          ),
+          parse(
+            `${format(date, 'yyyy-MM-dd')} 23:59`,
+            'yyyy-MM-dd HH:mm',
+            new Date()
+          )
+        ])
+      }
+
+      return
+    }
+
+    return query.orWhere(`${model.table}.${column}`, 'ilike', `%${search}%`)
+  }
 
   // ======== Sort and order =========
   if (filters.sort) {
@@ -27,61 +137,9 @@ export function setFilters(query, filters, model) {
 
   // ======== Search =========
   if (filters.search) {
-    if (model.virtuals.length) {
-      query.searchAfter = filters.search
-    }
-
     // Create grouped "or where"
     query = query.where(function () {
-      // Search for each column
-      columnNames.forEach((column) => {
-        if (!model.columns[column].searchable) {
-          return
-        }
-
-        let search = filters.search
-
-        const columnType = model.columns[column].type
-
-        // Integer
-        if (columnType === 'integer') {
-          if (!Number.isInteger(Number(search)) && Number(search) % 1 !== 0) {
-            return
-          }
-
-          return this.orWhere(`${model.table}.${column}`, Number(search))
-        }
-
-        // Float
-        if (columnType === 'float') {
-          search = Number(filters.search) || 0
-          return this.orWhere(`${model.table}.${column}`, search)
-        }
-
-        // Date
-        if (columnType === 'date') {
-          const date = new Date(search)
-
-          if (isValid(date)) {
-            return this.orWhereBetween(`${model.table}.${column}`, [
-              parse(
-                `${format(date, 'yyyy-MM-dd')} 00:00`,
-                'yyyy-MM-dd HH:mm',
-                new Date()
-              ),
-              parse(
-                `${format(date, 'yyyy-MM-dd')} 23:59`,
-                'yyyy-MM-dd HH:mm',
-                new Date()
-              )
-            ])
-          }
-
-          return
-        }
-
-        return this.orWhere(`${model.table}.${column}`, 'ilike', `%${search}%`)
-      })
+      createSearchWhere.call(this, query.model, query.include)
     })
   }
 

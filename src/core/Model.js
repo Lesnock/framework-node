@@ -112,12 +112,12 @@ class Model {
 
     query.select(this.mountAttributes(options))
 
-    if (options.filters) {
-      query = setFilters(query, options.filters, this)
-    }
-
     if (options.include) {
       this.addIncludeToQuery(query, options.include)
+    }
+
+    if (options.filters) {
+      query = setFilters(query, options.filters, this)
     }
 
     return query
@@ -138,52 +138,60 @@ class Model {
     return results
   }
 
-  static addIncludeToQuery(query, include) {
-    query.includes = {
-      belongsTo: [],
-      hasOne: [],
-      hasMany: []
-    }
+  static addIncludeToQuery(query, includes) {
+    const prepareds = []
 
-    include.forEach((include) => {
-      let model = null
-      let includeChain = undefined
-      let includeAttributes = undefined
+    includes.forEach((include) => {
+      function prepareInclude(_include) {
+        let model = null
+        let innerInclude = undefined
+        let includeAttributes = undefined
 
-      const includeIsObject = typeof include === 'object'
+        if (typeof _include === 'object') {
+          model = _include.model
+          includeAttributes = _include.attributes
 
-      if (includeIsObject) {
-        model = include.model
-        includeChain = include.include
-        includeAttributes = include.attributes
-      } else {
-        model = include
+          if (_include.include && _include.include.length) {
+            innerInclude = []
+
+            _include.include.forEach((innerInc) => {
+              console.log(model.name)
+              innerInclude.push(prepareInclude.call(model, innerInc))
+            })
+          }
+        } else {
+          model = _include
+        }
+
+        const association = this.associations[model.table]
+
+        if (!association) {
+          throw new Error(
+            `Association ${model.table} does not exists in ${model.name} model`
+          )
+        }
+
+        const { type, fk, target, as } = association
+
+        if (!type || !fk) {
+          throw new Error('All includes should have at least: type and fk')
+        }
+
+        return {
+          model,
+          type,
+          fk,
+          target: target || 'id',
+          as,
+          include: innerInclude,
+          attributes: includeAttributes
+        }
       }
 
-      const association = this.associations[model.table]
-
-      if (!association) {
-        throw new Error(
-          `Association ${include.table} does not exists in ${this.name} model`
-        )
-      }
-
-      const { type, fk, target, as } = association
-
-      if (!type || !fk) {
-        throw new Error('All includes should have at least: type and fk')
-      }
-
-      // All this includes will be resolved in the Knex Hooks (modules/database)
-      query.includes[type].push({
-        model,
-        fk,
-        target: target || 'id',
-        as,
-        include: includeChain,
-        attributes: includeAttributes
-      })
+      prepareds.push(prepareInclude.call(this, include))
     })
+
+    query.include = prepareds
   }
 
   /**

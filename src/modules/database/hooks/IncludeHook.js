@@ -11,19 +11,23 @@ export default function addIncludeHook(database) {
   // ============== belongsTo and hasOne Hook =================
   database.addHook('before', 'select', '*', (when, method, table, params) => {
     const model = params.query.model
-    const includes = params.query.includes
+    const includes = params.query.include
 
     if (!model || !includes) {
       return
     }
 
-    includes.belongsTo.forEach((association) =>
-      selectAndJoin(association, 'belongsTo')
-    )
+    includes
+      .filter((include) => include.type === 'belongsTo')
+      .forEach((association) => {
+        selectAndJoin(association, 'belongsTo')
+      })
 
-    includes.hasOne.forEach((association) =>
-      selectAndJoin(association, 'hasOne')
-    )
+    includes
+      .filter((include) => include.type === 'hasOne')
+      .forEach((association) => {
+        selectAndJoin(association, 'hasOne')
+      })
 
     function selectAndJoin(association, type) {
       const columns =
@@ -42,13 +46,15 @@ export default function addIncludeHook(database) {
         }
       }
 
+      console.log(model.table, type, association.fk, association.target)
+
       params.query.leftJoin(
         association.model.table,
         `${model.table}.${
-          type === 'belongsTo' ? association.fk : association.target
+          type === 'hasOne' ? association.fk : association.target
         }`,
         `${association.model.table}.${
-          type === 'belongsTo' ? association.target : association.fk
+          type === 'hasOne' ? association.target : association.fk
         }`
       )
     }
@@ -61,14 +67,18 @@ export default function addIncludeHook(database) {
     '*',
     async (when, method, table, params) => {
       const model = params.query.model
-      const includes = params.query.includes
+      const includes = params.query.include
 
       if (!model || !includes) {
         return
       }
 
       async function eagerLoad() {
-        for (const association of includes.hasMany) {
+        const hasManyIncludes = includes.filter(
+          (include) => include.type === 'hasMany'
+        )
+
+        for (const association of hasManyIncludes) {
           const results = params.result
 
           const target =
