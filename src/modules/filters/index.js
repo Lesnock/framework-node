@@ -26,8 +26,6 @@ export function setFilters(query, filters, model) {
       function addIncludeWhere(model, include) {
         const association = model.associations[include.model.table]
 
-        console.log(association, model)
-
         const fieldHere =
           association.type === 'hasOne' ? association.fk : association.target
 
@@ -40,8 +38,6 @@ export function setFilters(query, filters, model) {
           this.select(include.model.primaryKey || 'id')
 
           this.from(include.model.table)
-
-          console.log(association.type, model.table, fieldHere, fieldThere)
 
           // Get just the register that it is beign joined
           this.where(
@@ -57,13 +53,13 @@ export function setFilters(query, filters, model) {
             columnNames.forEach((column) => {
               createColumnWhere(this, include.model, column)
             })
-          })
 
-          if (include.include) {
-            include.include.forEach((inc) =>
-              addIncludeWhere.call(this, include.model, inc)
-            )
-          }
+            if (include.include) {
+              include.include.forEach((inc) =>
+                addIncludeWhere.call(this, include.model, inc)
+              )
+            }
+          })
         })
       }
 
