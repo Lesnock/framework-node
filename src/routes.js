@@ -23,6 +23,7 @@ Private.use(filters)
 
 Private.get('/', (req, res) => res.send('ok'))
 
+Private.get('/users', action(UserController, 'index'))
 Private.get('/users/me', action(UserController, 'me'))
 
 const resources = {
