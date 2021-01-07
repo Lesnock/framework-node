@@ -4,7 +4,7 @@ import database from '../modules/database'
 import Controller from '../core/Controller'
 
 class LoginController extends Controller {
-  key = 'email'
+  key = 'username'
 
   async login(req, res) {
     const { password } = req.body
