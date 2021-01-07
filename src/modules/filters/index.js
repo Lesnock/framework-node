@@ -35,7 +35,8 @@ export function setFilters(query, filters, model) {
         // Verify each field of include if it has the search term
         this.orWhereExists(function () {
           // "this" is the subquery
-          this.select(include.model.primaryKey || 'id')
+          // this.select(include.model.primaryKey || 'id')
+          this.select('*')
 
           this.from(include.model.table)
 

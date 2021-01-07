@@ -106,7 +106,7 @@ class Model {
    * @param {Object} options
    */
   static findAll(options = {}) {
-    let query = this.query()
+    let query = this.query().as('rows')
 
     query.model = this
 
@@ -130,9 +130,12 @@ class Model {
   static async findAllWithCountAndTotal(options = {}) {
     const results = {}
 
-    results.rows = await this.findAll(options)
+    const query = this.findAll(options)
 
-    results.total = await this.getTotal(options.filters)
+    results.rows = await query
+
+    results.total = await this.getTotalByQuery(query, this.primaryKey)
+
     results.count = results.rows.length
 
     return results
@@ -193,27 +196,45 @@ class Model {
     query.include = prepareds
   }
 
+  static async getTotalByQuery(query, primaryKey = 'id') {
+    query.clear('limit')
+    query.clear('offset')
+
+    const result = await database.count(primaryKey).from(query)
+
+    return Number(result[0].count)
+  }
+
   /**
-   * Get total count with out without params
+   * Get total count without params
    * @param {Object} options
    */
-  static async getTotal(filters = {}) {
-    let query = this.query()
+  static async getTotal(options = {}) {
+    let query = this.query().as('sub')
 
     query.model = this
 
-    query.select(this.primaryKey)
+    // query.select(this.primaryKey)
+    query.select(this.mountAttributes(options))
 
-    if (filters) {
-      filters.limit = undefined
-      filters.page = undefined
-
-      query = setFilters(query, filters, this)
+    if (options.include) {
+      this.addIncludeToQuery(query, options.include)
     }
 
-    const result = await query
+    if (options.filters) {
+      options.filters.limit = undefined
+      options.filters.page = undefined
 
-    return result.length
+      query = setFilters(query, options.filters, this)
+    }
+
+    query
+      .count(`${this.table}.${this.primaryKey}`)
+      .groupBy(`${this.table}.${this.primaryKey}`)
+
+    const result = await database.count('id').from(query)
+
+    return Number(result[0].count)
   }
 
   /**
