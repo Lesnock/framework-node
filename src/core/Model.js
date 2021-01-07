@@ -155,7 +155,6 @@ class Model {
             innerInclude = []
 
             _include.include.forEach((innerInc) => {
-              console.log(model.name)
               innerInclude.push(prepareInclude.call(model, innerInc))
             })
           }

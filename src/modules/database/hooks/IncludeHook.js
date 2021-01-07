@@ -46,8 +46,6 @@ export default function addIncludeHook(database) {
         }
       }
 
-      console.log(model.table, type, association.fk, association.target)
-
       params.query.leftJoin(
         association.model.table,
         `${model.table}.${
