@@ -25,9 +25,6 @@ Private.get('/', (req, res) => res.send('ok'))
 
 Private.get('/users/me', action(UserController, 'me'))
 
-Private.get('/withdrawals/test', action(WithdrawalController, 'test'))
-Private.get('/withdrawals/find', action(WithdrawalController, 'find'))
-
 const resources = {
   '/users': UserController,
   '/departments': DepartmentController,

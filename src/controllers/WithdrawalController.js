@@ -3,163 +3,13 @@ import WithdrawalItem from '../models/WithdrawalItem'
 import ResourceController from '../core/ResourceController'
 
 import Product from '../models/Product'
-import {
-  uuidv4,
-  sortArrayBy,
-  filterNestedArray,
-  resolveDotNotation
-} from '../helpers'
+import { uuidv4 } from '../helpers'
 
 class WithdrawalController extends ResourceController {
   constructor() {
     super()
 
     this.model = Withdrawal
-  }
-
-  async test(req, res) {
-    const results = await Withdrawal.findAllWithCountAndTotal({
-      filters: req.filters,
-      include: [
-        {
-          model: WithdrawalItem,
-          include: [
-            {
-              model: Product,
-              attributes: ['id', 'name']
-            }
-          ]
-        }
-      ]
-    })
-
-    res.send(results)
-
-    // const results = [
-    //   {
-    //     id: 5,
-    //     'department.name': 'TI',
-    //     'phones[].number': 200
-    //   },
-    //   {
-    //     id: 5,
-    //     'department.name': 'TI',
-    //     'phones[].number': 201
-    //   }
-    // ]
-    // .reduce((accumulator, result) => {
-    //   if (accumulator.find((item) => item.id === result.id).length) {
-    //     Object.keys(result).forEach((field) => {
-    //       if (field.indexOf('.') > 0) {
-
-    //       }
-    //     })
-    //   }
-    // })
-
-    // const results = {
-    //   id: 5,
-    //   'phones[].number': 200
-    // }
-
-    // const transformed = {
-    //   id: 5,
-    //   phones: [{ number: 200 }, { number: 201 }]
-    // }
-
-    // const results = {
-    //   id: 5,
-    //   'department.name': 'TI',
-    //   'phones[1].id': 1,
-    //   'phones[0].number': 200
-    // }
-
-    // console.log()
-
-    // return res.send(resolveDotNotation(results))
-  }
-
-  async find(req, res) {
-    const rows = [
-      {
-        id: 1,
-        name: 'Caio',
-        department: {
-          id: 1,
-          name: 'TI'
-        },
-        phones: [
-          {
-            id: 1,
-            number: 203
-          },
-          {
-            id: 2,
-            number: 201
-          }
-        ],
-        happy: [
-          {
-            year: 2020,
-            plus: [
-              {
-                phrase: 'God is good'
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 2,
-        name: 'Danilo',
-        department: {
-          id: 1,
-          name: 'TI'
-        },
-        phones: [
-          {
-            id: 2,
-            number: 201
-          },
-          {
-            id: 3,
-            number: 200
-          }
-        ]
-      },
-      {
-        id: 2,
-        name: 'Andressa',
-        department: {
-          id: 2,
-          name: 'Compras'
-        },
-        phones: [
-          {
-            id: 4,
-            number: 108
-          }
-        ],
-        happy: [
-          {
-            year: 2020,
-            plus: [
-              'test',
-              {
-                phrase: 'I love God'
-              }
-            ]
-          }
-        ]
-      }
-    ]
-
-    const path = 'department.name'
-    const search = 'Compras'
-
-    const findedRows = filterNestedArray(rows, path, search)
-
-    res.send(findedRows)
   }
 
   /**
@@ -180,9 +30,6 @@ class WithdrawalController extends ResourceController {
         }
       ]
     })
-
-    // Sort by ID
-    // results.rows = sortArrayBy(results.rows, 'id', 'desc')
 
     return results
   }
