@@ -15,6 +15,8 @@ import database from '../database'
  */
 
 export function setFilters(query, filters, model) {
+  const dbClient = query.client.config.client
+
   function createSearchWhere(model, includes) {
     const query = this
 
@@ -120,7 +122,13 @@ export function setFilters(query, filters, model) {
       return
     }
 
-    return query.orWhere(`${model.table}.${column}`, 'ilike', `%${search}%`)
+    if (dbClient === 'pg') {
+      return query.orWhere(`${model.table}.${column}`, 'ilike', `%${search}%`)
+    } else {
+      return query.orWhereRaw(`LOWER(${model.table}.${column}) LIKE ?`, [
+        `%${search}%`
+      ])
+    }
   }
 
   // ======== Sort and order =========
@@ -140,7 +148,7 @@ export function setFilters(query, filters, model) {
     })
   }
 
-  // ======== Field Search =========
+  // ======== Field Search (JSON Format) =========
   if (filters.fieldsearch) {
     if (typeof filters.fieldsearch === 'string') {
       filters.fieldsearch = JSON.parse(filters.fieldsearch)
@@ -198,7 +206,13 @@ export function setFilters(query, filters, model) {
         }
 
         // Column is string
-        return this.where(`${model.table}.${field}`, 'ilike', `%${search}%`)
+        if (dbClient === 'pg') {
+          return this.where(`${model.table}.${field}`, 'ilike', `%${search}%`)
+        } else {
+          return this.whereRaw(`LOWER(${model.table}.${field}) LIKE ?`, [
+            `%${search}%`
+          ])
+        }
       })
     })
   }
