@@ -200,7 +200,7 @@ class Model {
     query.clear('limit')
     query.clear('offset')
 
-    const result = await database.count(primaryKey).from(query)
+    const result = await database.count(primaryKey, { as: 'count' }).from(query)
 
     return Number(result[0].count)
   }
