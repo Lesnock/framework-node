@@ -109,8 +109,8 @@ class Model {
    * Get all results from a table
    * @param {Object} options
    */
-  static findAll(options = {}) {
-    let query = this.query().as('rows')
+  static findAll(options = {}, initialQuery) {
+    let query = initialQuery ? initialQuery : this.query().as('rows')
 
     query.select(this.mountAttributes(options))
 
@@ -129,10 +129,10 @@ class Model {
    * Get all results from a table and attach count and total
    * @param {*} options
    */
-  static async findAllWithCountAndTotal(options = {}) {
+  static async findAllWithCountAndTotal(options = {}, initialQuery) {
     const results = {}
 
-    const query = this.findAll(options)
+    const query = this.findAll(options, initialQuery)
 
     results.rows = await query
 
