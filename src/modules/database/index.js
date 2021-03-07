@@ -3,6 +3,7 @@ import knexHooks from 'knex-hooks'
 import knexFile from '../../../knexfile'
 
 // Hooks
+import JsonHook from './hooks/JsonHook'
 import IncludeHook from './hooks/IncludeHook'
 import TimezonesHook from './hooks/TimezonesHook'
 import DotNotationHook from './hooks/DotNotationHook'
@@ -30,6 +31,7 @@ export function getDatabase() {
  * @param database
  */
 function addHooks(database) {
+  JsonHook(database)
   IncludeHook(database)
   TimezonesHook(database)
   DotNotationHook(database)
