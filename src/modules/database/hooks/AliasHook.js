@@ -1,9 +1,9 @@
 /**
- * Hook for resolve columns that are of the type 'json'
+ * Hook for run mutators in columns
  * *
  * @param database
  */
-export default function addIncludeHook(database) {
+export default function addAsHook(database) {
   // ============== hasMany hook (Eager loading) =================== //
   database.addHook(
     'after',
@@ -20,8 +20,12 @@ export default function addIncludeHook(database) {
         columns.forEach((column) => {
           if (!model.columns[column]) return
 
-          if (model.columns[column].type === 'json') {
-            result[column] = JSON.parse(result[column])
+          if (model.columns[column].as) {
+            const value = result[column]
+
+            delete result[column]
+
+            result[model.columns[column].as] = value
           }
         })
       })
