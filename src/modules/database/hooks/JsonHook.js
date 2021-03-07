@@ -14,7 +14,9 @@ export default function addIncludeHook(database) {
 
       if (!model) return
 
-      params.result.forEach((result) => {
+      function resolveJson(result) {
+        if (!result) return result
+
         const columns = Object.keys(result)
 
         columns.forEach((column) => {
@@ -24,7 +26,13 @@ export default function addIncludeHook(database) {
             result[column] = JSON.parse(result[column])
           }
         })
-      })
+      }
+
+      if (Array.isArray(params.result)) {
+        params.result.forEach(resolveJson)
+      } else {
+        resolveJson(params.result)
+      }
     }
   )
 }

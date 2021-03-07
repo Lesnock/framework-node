@@ -79,7 +79,11 @@ class Model {
    * Get knex instance with table
    */
   static query() {
-    return database(this.table)
+    const query = database(this.table)
+
+    query.model = this
+
+    return query
   }
 
   static mountAttributes(options) {
@@ -93,7 +97,8 @@ class Model {
         continue
       }
 
-      const as = column.as || columnName
+      // const as = column.as || columnName
+      const as = columnName
 
       attributes.push(`${this.table}.${columnName} as ${as}`)
     }
@@ -107,8 +112,6 @@ class Model {
    */
   static findAll(options = {}) {
     let query = this.query().as('rows')
-
-    query.model = this
 
     query.select(this.mountAttributes(options))
 
@@ -212,8 +215,6 @@ class Model {
   static async getTotal(options = {}) {
     let query = this.query().as('sub')
 
-    query.model = this
-
     // query.select(this.primaryKey)
     query.select(this.mountAttributes(options))
 
@@ -244,8 +245,6 @@ class Model {
   static async find(primaryKey, options = {}) {
     const query = this.query()
 
-    query.model = this
-
     query.select(this.mountAttributes(options))
 
     query.where(this.primaryKey, primaryKey)
@@ -264,8 +263,6 @@ class Model {
    */
   static async findBy(column, value) {
     const query = this.query().where(column, value)
-
-    query.model = this
 
     query.select(this.mountAttributes())
 
@@ -286,7 +283,9 @@ class Model {
       }
     })
 
-    return this.query().insert(data)
+    const query = this.query()
+
+    return query.insert(data)
   }
 
   /**
@@ -303,14 +302,20 @@ class Model {
       }
     })
 
-    return this.query().where(this.primaryKey, primaryKey).update(data)
+    const query = this.query()
+
+    query.model = this
+
+    return query.where(this.primaryKey, primaryKey).update(data)
   }
 
   /**
    * Delete record
    */
   static async delete(primaryKey) {
-    return this.query().where(this.primaryKey, primaryKey).del()
+    const query = this.query()
+
+    return query.where(this.primaryKey, primaryKey).del()
   }
 
   /**

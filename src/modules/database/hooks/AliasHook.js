@@ -14,7 +14,8 @@ export default function addAsHook(database) {
 
       if (!model) return
 
-      params.result.forEach((result) => {
+      function setAlias(result) {
+        if (!result) return
         const columns = Object.keys(result)
 
         columns.forEach((column) => {
@@ -28,7 +29,13 @@ export default function addAsHook(database) {
             result[model.columns[column].as] = value
           }
         })
-      })
+      }
+
+      if (Array.isArray(params.result)) {
+        params.result.forEach(setAlias)
+      } else {
+        setAlias(params.result)
+      }
     }
   )
 }
