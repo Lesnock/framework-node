@@ -241,8 +241,8 @@ class Model {
    * Get a single record by id
    * @param {*} id
    */
-  static async find(primaryKey, options = {}) {
-    const query = this.query()
+  static async find(primaryKey, options = {}, initialQuery) {
+    const query = initialQuery ? initialQuery : this.query()
 
     query.select(this.mountAttributes(options))
 
