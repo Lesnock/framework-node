@@ -97,7 +97,6 @@ class Model {
         continue
       }
 
-      // const as = column.as || columnName
       const as = columnName
 
       attributes.push(`${this.table}.${columnName} as ${as}`)

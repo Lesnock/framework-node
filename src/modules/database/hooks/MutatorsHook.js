@@ -25,8 +25,8 @@ export default function addMutatorHook(database) {
       rows.forEach((row) => {
         Object.keys(row).forEach((column) => {
           if (model.columns[column][method]) {
-            const value = model.columns[column]
-            row[column] = model.columns[column][method](value)
+            const value = row[column]
+            row[column] = model.columns[column][method](value, { ...row })
           }
         })
       })
@@ -54,7 +54,7 @@ export default function addMutatorHook(database) {
           if (model.columns[column].get) {
             let value = result[column]
 
-            result[column] = model.columns[column].get(value)
+            result[column] = model.columns[column].get(value, result)
           }
         })
       }
