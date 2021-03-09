@@ -48,10 +48,10 @@ export default function addMutatorHook(database) {
 
       if (!model) return
 
-      function mutate(result) {
+      async function mutate(result) {
         if (!result) return
 
-        Object.keys(model.columns).forEach(column => {
+        for (const column of Object.keys(model.columns)) {
           if (
             model.columns[column].hidden !== true &&
             model.columns[column].mutators &&
@@ -59,15 +59,20 @@ export default function addMutatorHook(database) {
           ) {
             let value = result[column]
 
-            result[column] = model.columns[column].mutators.get(value, result)
+            result[column] = await model.columns[column].mutators.get(
+              value,
+              result
+            )
           }
-        })
+        }
       }
 
       if (Array.isArray(params.result)) {
-        params.result.forEach(mutate)
+        for (const result of params.result) {
+          await mutate(result)
+        }
       } else {
-        mutate(params.result)
+        await mutate(params.result)
       }
     }
   )
