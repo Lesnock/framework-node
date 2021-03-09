@@ -93,7 +93,7 @@ class Model {
     for (const columnName of columns) {
       const column = this.columns[columnName]
 
-      if (column.hidden === true) {
+      if (column.hidden === true || column.type === 'virtual') {
         continue
       }
 
@@ -109,8 +109,8 @@ class Model {
    * Get all results from a table
    * @param {Object} options
    */
-  static findAll(options = {}, initialQuery) {
-    let query = initialQuery ? initialQuery : this.query().as('rows')
+  static findAll(options = {}, injectQuery) {
+    let query = injectQuery ? injectQuery : this.query().as('rows')
 
     query.select(this.mountAttributes(options))
 
@@ -129,10 +129,10 @@ class Model {
    * Get all results from a table and attach count and total
    * @param {*} options
    */
-  static async findAllWithCountAndTotal(options = {}, initialQuery) {
+  static async findAllWithCountAndTotal(options = {}, injectQuery) {
     const results = {}
 
-    const query = this.findAll(options, initialQuery)
+    const query = this.findAll(options, injectQuery)
 
     results.rows = await query
 
@@ -146,7 +146,7 @@ class Model {
   static addIncludeToQuery(query, includes) {
     const prepareds = []
 
-    includes.forEach((include) => {
+    includes.forEach(include => {
       function prepareInclude(_include) {
         let model = null
         let innerInclude = undefined
@@ -159,7 +159,7 @@ class Model {
           if (_include.include && _include.include.length) {
             innerInclude = []
 
-            _include.include.forEach((innerInc) => {
+            _include.include.forEach(innerInc => {
               innerInclude.push(prepareInclude.call(model, innerInc))
             })
           }
@@ -276,7 +276,7 @@ class Model {
     const columns = Object.keys(data)
 
     // Remove all columns that does not exists in database
-    columns.forEach((column) => {
+    columns.forEach(column => {
       if (!this.columns[column]) {
         delete data[column]
       }
@@ -295,7 +295,7 @@ class Model {
     const columns = Object.keys(data)
 
     // Remove all columns that does not exists in database
-    columns.forEach((column) => {
+    columns.forEach(column => {
       if (!this.columns[column]) {
         delete data[column]
       }
@@ -343,7 +343,7 @@ class Model {
 
     const columns = Object.keys(this.columns)
 
-    columns.forEach((columnName) => {
+    columns.forEach(columnName => {
       const column = this.columns[columnName]
 
       if (column.validations) {
@@ -361,3 +361,4 @@ class Model {
 }
 
 export default Model
+
