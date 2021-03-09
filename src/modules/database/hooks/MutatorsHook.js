@@ -22,9 +22,12 @@ export default function addMutatorHook(database) {
 
       const rows = Array.isArray(data) ? data : [data]
 
-      rows.forEach((row) => {
-        Object.keys(row).forEach((column) => {
-          if (model.columns[column][method]) {
+      rows.forEach(row => {
+        Object.keys(model.columns).forEach(column => {
+          if (
+            model.columns[column].mutators &&
+            model.columns[column].mutators[method]
+          ) {
             const value = row[column]
             row[column] = model.columns[column][method](value, { ...row })
           }
@@ -46,15 +49,15 @@ export default function addMutatorHook(database) {
       function mutate(result) {
         if (!result) return
 
-        const columns = Object.keys(result)
-
-        columns.forEach((column) => {
-          if (!model.columns[column]) return
-
-          if (model.columns[column].get) {
+        Object.keys(model.columns).forEach(column => {
+          if (
+            model.columns[column].hidden !== true &&
+            model.columns[column].mutators &&
+            model.columns[column].mutators.get
+          ) {
             let value = result[column]
 
-            result[column] = model.columns[column].get(value, result)
+            result[column] = model.columns[column].mutators.get(value, result)
           }
         })
       }
@@ -67,3 +70,5 @@ export default function addMutatorHook(database) {
     }
   )
 }
+
+
