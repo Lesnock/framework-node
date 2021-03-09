@@ -29,7 +29,9 @@ export default function addMutatorHook(database) {
             model.columns[column].mutators[method]
           ) {
             const value = row[column]
-            row[column] = model.columns[column][method](value, { ...row })
+            row[column] = model.columns[column].mutators[method](value, {
+              ...row
+            })
           }
         })
       })
@@ -70,5 +72,3 @@ export default function addMutatorHook(database) {
     }
   )
 }
-
-
