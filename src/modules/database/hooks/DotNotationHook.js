@@ -15,7 +15,7 @@ export default function DotNotationHook(database) {
         params.result[index] = resolveDotNotation(row)
       }
     } else {
-      resolveDotNotation(params.result)
+      params.result = resolveDotNotation(params.result)
     }
   })
 }
