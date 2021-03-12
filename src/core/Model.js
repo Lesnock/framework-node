@@ -122,10 +122,7 @@ class Model {
       query = setFilters(query, options.filters, this)
     }
 
-    console.log('TTTTTTTTTT', this.table)
-
     if (options.query) {
-      console.log('QQQQ', this.table, options.query.toString())
       query = options.query(query)
     }
 
