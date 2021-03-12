@@ -18,14 +18,14 @@ export default function addIncludeHook(database) {
     }
 
     includes
-      .filter((include) => include.type === 'belongsTo')
-      .forEach((association) => {
+      .filter(include => include.type === 'belongsTo')
+      .forEach(association => {
         selectAndJoin(association, 'belongsTo')
       })
 
     includes
-      .filter((include) => include.type === 'hasOne')
-      .forEach((association) => {
+      .filter(include => include.type === 'hasOne')
+      .forEach(association => {
         selectAndJoin(association, 'hasOne')
       })
 
@@ -55,6 +55,8 @@ export default function addIncludeHook(database) {
           type === 'hasOne' ? association.target : association.fk
         }`
       )
+
+      params.query = association.query(params.query)
     }
   })
 
@@ -73,7 +75,7 @@ export default function addIncludeHook(database) {
 
       async function eagerLoad() {
         const hasManyIncludes = includes.filter(
-          (include) => include.type === 'hasMany'
+          include => include.type === 'hasMany'
         )
 
         for (const association of hasManyIncludes) {
@@ -87,26 +89,31 @@ export default function addIncludeHook(database) {
           let fetchedIds = []
 
           if (Array.isArray(results)) {
-            fetchedIds = results.map((row) => {
+            fetchedIds = results.map(row => {
               return row[target]
             })
           } else {
             fetchedIds.push(results[target])
           }
 
-          const foreign = await association.model
-            .findAll({
+          const foreign = await association.model.findAll(
+            {
               include: association.include,
-              attributes: association.attributes
-            })
-            .whereIn(`${association.model.table}.${fk}`, fetchedIds)
+              attributes: association.attributes,
+              query: association.query
+            },
+            // Inject Query
+            association.model
+              .query()
+              .whereIn(`${association.model.table}.${fk}`, fetchedIds)
+          )
 
           if (Array.isArray(results)) {
             for (const index in params.result) {
               params.result[index][
                 association.as || association.model.table
               ] = foreign.filter(
-                (row) => row[fk] === params.result[index][target]
+                row => row[fk] === params.result[index][target]
               )
             }
           } else {
