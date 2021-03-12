@@ -122,6 +122,10 @@ class Model {
       query = setFilters(query, options.filters, this)
     }
 
+    if (options.query) {
+      query = options.query(query)
+    }
+
     return query
   }
 
@@ -188,7 +192,8 @@ class Model {
           target: target || 'id',
           as,
           include: innerInclude,
-          attributes: includeAttributes
+          attributes: includeAttributes,
+          query: _include.query
         }
       }
 
@@ -242,14 +247,18 @@ class Model {
    * @param {*} id
    */
   static async find(primaryKey, options = {}, initialQuery) {
-    const query = initialQuery ? initialQuery : this.query()
+    let query = initialQuery ? initialQuery : this.query()
 
     query.select(this.mountAttributes(options))
 
-    query.where(this.primaryKey, primaryKey)
+    query.where(`${this.table}.${this.primaryKey}`, primaryKey)
 
     if (options.include) {
       this.addIncludeToQuery(query, options.include)
+    }
+
+    if (options.query) {
+      query = options.query(query)
     }
 
     return query.first()
@@ -361,4 +370,3 @@ class Model {
 }
 
 export default Model
-
