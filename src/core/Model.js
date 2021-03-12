@@ -122,7 +122,10 @@ class Model {
       query = setFilters(query, options.filters, this)
     }
 
+    console.log('TTTTTTTTTT', this.table)
+
     if (options.query) {
+      console.log('QQQQ', this.table, options.query.toString())
       query = options.query(query)
     }
 
@@ -193,7 +196,7 @@ class Model {
           as,
           include: innerInclude,
           attributes: includeAttributes,
-          query: _include.query
+          query: typeof _include === 'object' ? _include.query : undefined
         }
       }
 
